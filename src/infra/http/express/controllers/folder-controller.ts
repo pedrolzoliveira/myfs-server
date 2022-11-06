@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { CreateFolder } from '../../../../domain/use-cases/create-folder'
 import { GetFolder } from '../../../../domain/use-cases/get-folder'
 import { transformResponse } from '../../transformers/response-transformer'
-import HttpStatusCode from '../../http-status-code'
+import { HttpStatusCode } from '../../http-status-code'
 
 export class FolderController {
   constructor (
