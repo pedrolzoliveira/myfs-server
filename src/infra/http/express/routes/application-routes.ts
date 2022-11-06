@@ -1,13 +1,12 @@
 import { Router } from 'express'
-import { FolderController } from '../controllers/folder-controller'
+import { FolderRoutes } from './folder-routes'
 
 export class ApplicationRoutes {
   public route: Router
   constructor(
-    public folderController: FolderController
+    public folderRoutes: FolderRoutes
   ) {
     this.route = Router()
-    this.route.get('/folders', this.folderController.find.bind(folderController))
-    this.route.post('/folders', this.folderController.create.bind(folderController))
+    this.route.use('/folders', this.folderRoutes.route.bind(folderRoutes))
   }
 }
