@@ -1,6 +1,7 @@
 import { Server } from '../infra/http/express/server'
 import { createApplicationRoutes } from './application-routes-factory'
 import { createCreateFolder } from './create-folder-factory'
+import { createErrorHandler } from './error-handler-factory'
 import { createFolderController } from './folder-controller-factory'
 import { createFolderPrismaRepository } from './folder-prisma-repository-factory'
 import { createGetFolder } from './get-folder-factory'
@@ -18,5 +19,7 @@ export function createServer() {
 
   const applicationRoutes = createApplicationRoutes(folderController)
 
-  return new Server(applicationRoutes.route)
+  const errorHandler = createErrorHandler()
+
+  return new Server(applicationRoutes.route, errorHandler)
 }
