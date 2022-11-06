@@ -1,4 +1,4 @@
-interface DeleteFolderData {
+export interface DeleteFolderData {
   id: string
 }
 

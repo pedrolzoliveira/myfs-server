@@ -14,7 +14,8 @@ export class FolderController {
     const folder = await this.createFolder.exec(req.body)
     return res.status(HttpStatusCode.CREATED).send(
       transformResponse({
-        payload: { folder }
+        payload: { folder },
+        message: 'Folder created successfully'
       })
     )
   }
@@ -22,13 +23,17 @@ export class FolderController {
   async find(req: Request, res: Response) {
     if (req.body.id) {
       const folder = await this.getFolder.exec(req.body)
-      return res.status(HttpStatusCode.OK).send({
-        payload: { folder }
-      })
+      return res.status(HttpStatusCode.OK).send(
+        transformResponse({
+          payload: { folder }
+        })
+      )
     }
     const folders = await this.getFolder.exec(req.body)
-    return res.status(HttpStatusCode.OK).send({
-      payload: { folders }
-    })
+    return res.status(HttpStatusCode.OK).send(
+      transformResponse({
+        payload: { folders }
+      })
+    )
   }
 }

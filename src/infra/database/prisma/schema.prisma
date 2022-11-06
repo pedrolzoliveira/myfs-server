@@ -27,3 +27,9 @@ model Folder {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
+
+model User {
+    id String @id @default(uuid())
+    name String
+    email String @unique
+}

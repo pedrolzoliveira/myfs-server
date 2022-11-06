@@ -1,15 +1,16 @@
+import { FindAllFolderRepository } from '../../data/find-all-folder-repository'
+import { FindFolderRepository } from '../../data/find-folder-repository'
 import { GetFolder as IGetFolder, GetFolderData } from '../../domain/use-cases/get-folder'
-import { FolderPrismaRepository } from '../../infra/database/repositories/folder-prisma-resitory'
 
 export class GetFolder implements IGetFolder {
   constructor (
-    readonly folderRepository: FolderPrismaRepository
+    readonly folderRepository: FindFolderRepository & FindAllFolderRepository
   ) {}
 
-  exec(data: GetFolderData) {
+  async exec(data: GetFolderData) {
     if (data.id) {
-      return this.folderRepository.find({ id: data.id })
+      return await this.folderRepository.find({ id: data.id })
     }
-    return this.folderRepository.findAll({})
+    return await this.folderRepository.findAll({})
   }
 }
