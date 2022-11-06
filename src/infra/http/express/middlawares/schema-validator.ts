@@ -6,11 +6,12 @@ import { transformResponse } from '../../transformers/response-transformer'
 export class SchemaValidator {
   handle(schema: Schema) {
     return async (req: Request, res: Response, next: NextFunction) => {
-      const errors = await checkSchema(schema).run(req)
+      const [result] = await checkSchema(schema).run(req)
+      const errors = result.array()
       if (!errors.length) {
-        next()
+        return next()
       }
-      res.status(HttpStatusCode.BAD_REQUEST).send(
+      return res.status(HttpStatusCode.BAD_REQUEST).send(
         transformResponse({
           errors
         })
