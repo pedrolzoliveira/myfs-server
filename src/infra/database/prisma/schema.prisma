@@ -32,4 +32,5 @@ model User {
     id String @id @default(uuid())
     name String
     email String @unique
+    admin Boolean @default(false)
 }

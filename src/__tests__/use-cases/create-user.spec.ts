@@ -25,6 +25,10 @@ describe('Create User Use Case', () => {
     it('has a name', () => {
       expect(user.name).toBe('Pedro')
     })
+
+    it('is not admin', () => {
+      expect(user.admin).toBe(false)
+    })
   })
 
   describe('tries to create an user with already used email', () => {
@@ -36,7 +40,7 @@ describe('Create User Use Case', () => {
 
     it('should throw', () => {
       expect(async () => {
-        createUser.exec({ name: 'Peter Parker', email: firstUser.email })
+        await createUser.exec({ name: 'Peter Parker', email: firstUser.email })
       }).rejects.toThrow()
     })
   })

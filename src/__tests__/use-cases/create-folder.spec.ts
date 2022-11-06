@@ -7,8 +7,10 @@ import { createPrismaClient } from '../../factories/prisma-client-factory'
 describe('Create Folder Use Case', () => {
   let createFolder: CreateFolder
 
-  beforeAll(() => {
-    createFolder = createCreateFolder(createFolderPrismaRepository(createPrismaClient()))
+  beforeAll(async () => {
+    const prismaClient = createPrismaClient()
+    prismaClient.folder.deleteMany()
+    createFolder = createCreateFolder(createFolderPrismaRepository(prismaClient))
   })
 
   describe('creates a folder', () => {
@@ -58,7 +60,7 @@ describe('Create Folder Use Case', () => {
             name: 'hahahah',
             parentId: 'lmao i dont exists hahahah'
           })
-        }).rejects.toThrow()
+        }).rejects.toThrowError()
       })
     })
   })
