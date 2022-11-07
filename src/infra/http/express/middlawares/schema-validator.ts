@@ -6,8 +6,8 @@ import { transformResponse } from '../../transformers/response-transformer'
 export class SchemaValidator {
   handle(schema: Schema) {
     return async (req: Request, res: Response, next: NextFunction) => {
-      const [result] = await checkSchema(schema).run(req)
-      const errors = result.array()
+      const resultArr = await checkSchema(schema).run(req)
+      const errors = resultArr.map(result => result.array()).flat()
       if (!errors.length) {
         return next()
       }
