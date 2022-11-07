@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { FolderController } from '../controllers/folder-controller'
 import { SchemaValidator } from '../middlawares/schema-validator'
 import { FolderCreateSchema } from '../request-schemas/folder-create-schema'
+
 export class FolderRoutes {
   public route: Router
   constructor(
