@@ -7,6 +7,7 @@ import { createFolderController } from './folder-controller-factory'
 import { createFolderPrismaRepository } from './folder-prisma-repository-factory'
 import { createGetFolder } from './get-folder-factory'
 import { createPrismaClient } from './prisma-client-factory'
+import { createSignIn } from './sign-in-factory'
 import { createUserController } from './user-controller-factory'
 import { createUserPrismaRepository } from './user-prisma-repository'
 
@@ -19,9 +20,10 @@ export function createServer() {
   const createFolderUseCase = createCreateFolder(folderRepository)
   const getFolderUseCase = createGetFolder(folderRepository)
   const createUser = createCreateUser(userRepository)
+  const signIn = createSignIn(userRepository)
 
   const folderController = createFolderController(createFolderUseCase, getFolderUseCase)
-  const userController = createUserController(createUser)
+  const userController = createUserController(createUser, signIn)
 
   const applicationRoutes = createApplicationRoutes(folderController, userController)
 

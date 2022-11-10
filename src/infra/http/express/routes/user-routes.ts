@@ -11,5 +11,6 @@ export class UserRoutes {
   ) {
     this.route = Router()
     this.route.post('/', this.schemaValidator.handle(UserCreateSchema), this.userController.create.bind(userController))
+    this.route.post('/sign-in', this.schemaValidator.handle({ email: { isString: true } }), this.userController.signIn.bind(userController))
   }
 }

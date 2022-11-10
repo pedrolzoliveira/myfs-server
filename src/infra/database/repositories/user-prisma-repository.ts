@@ -1,8 +1,9 @@
 import { Prisma, PrismaClient } from '@prisma/client'
 import { CreateUserData, CreateUserRepository } from '../../../data/create-user-repository'
 import { UniqueConstraintError } from '../../../data/errors/unique-constraint-error'
+import { FindUserData, FindUserRepository } from '../../../data/find-user-repository'
 
-export class UserPrismaRepository implements CreateUserRepository {
+export class UserPrismaRepository implements CreateUserRepository, FindUserRepository {
   constructor(
     private readonly prismaClient: PrismaClient
   ) {}
@@ -16,5 +17,9 @@ export class UserPrismaRepository implements CreateUserRepository {
       }
       throw e
     }
+  }
+
+  async find(data: FindUserData) {
+    return this.prismaClient.user.findUnique({ where: { ...data } })
   }
 }
