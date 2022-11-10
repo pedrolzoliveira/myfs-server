@@ -1,3 +1,4 @@
+// import { serializeError } from 'serialize-error'
 import { Response } from '../interfaces/response'
 
 interface transformResponseParams {
@@ -9,5 +10,6 @@ interface transformResponseParams {
 
 export const transformResponse = (res: transformResponseParams = {}): Response => ({
   ...res,
+  errors: res.errors?.map(error => error),
   ok: res.ok ?? !res.errors?.length
 })
