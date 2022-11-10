@@ -3,21 +3,35 @@ import { CreateFolder } from '../../domain/use-cases/create-folder'
 import { createCreateFolder } from '../../factories/use-cases/create-folder-factory'
 import { createFolderPrismaRepository } from '../../factories/folder-prisma-repository-factory'
 import { createPrismaClient } from '../../factories/prisma-client-factory'
+import { User } from '../../domain/model/user'
+import { createUserPrismaRepository } from '../../factories/user-prisma-repository'
+import { createUserHasFolderPermission } from '../../factories/use-cases/user-has-folder-permission-factory'
+import { ForeignKeyConstraintError } from '../../data/errors/foreign-key-constraint-error'
+import { PrismaClient } from '@prisma/client'
+import { PermissionError } from '../../application/errors/permission-error'
 
 describe('Create Folder Use Case', () => {
   let createFolder: CreateFolder
+  let user: User
+  let prismaClient: PrismaClient
 
   beforeAll(async () => {
-    const prismaClient = createPrismaClient()
-    prismaClient.folder.deleteMany()
-    createFolder = createCreateFolder(createFolderPrismaRepository(prismaClient))
+    prismaClient = createPrismaClient()
+
+    user = await prismaClient.user.create({ data: { name: 'The folder owner', email: 'the folder stuff' } })
+
+    const folderRepo = createFolderPrismaRepository(prismaClient)
+    const userRepo = createUserPrismaRepository(prismaClient)
+    const userHasPermission = createUserHasFolderPermission(userRepo, folderRepo)
+
+    createFolder = createCreateFolder(folderRepo, userRepo, userHasPermission)
   })
 
   describe('creates a folder', () => {
     let folder: Folder
 
     beforeAll(async () => {
-      folder = await createFolder.exec({ name: 'toninho bandeira' })
+      folder = await createFolder.exec({ name: 'toninho bandeira', userId: user.id as string })
     })
 
     it('has an id', () => {
@@ -33,7 +47,7 @@ describe('Create Folder Use Case', () => {
     let parentFolderId: string
 
     beforeAll(async () => {
-      const parentFolder = await createFolder.exec({ name: 'parent folder' })
+      const parentFolder = await createFolder.exec({ name: 'parent folder', userId: user.id as string })
       parentFolderId = parentFolder.id as string
     })
 
@@ -41,7 +55,7 @@ describe('Create Folder Use Case', () => {
       let folder: Folder
 
       beforeAll(async() => {
-        folder = await createFolder.exec({ name: 'children folder', parentId: parentFolderId })
+        folder = await createFolder.exec({ name: 'children folder', parentId: parentFolderId, userId: user.id as string })
       })
 
       it('should have the name right', () => {
@@ -58,10 +72,40 @@ describe('Create Folder Use Case', () => {
         expect(async () => {
           await createFolder.exec({
             name: 'hahahah',
-            parentId: 'lmao i dont exists hahahah'
+            parentId: 'lmao i dont exists hahahah',
+            userId: user.id as string
           })
-        }).rejects.toThrowError()
+        }).rejects.toThrowError(ForeignKeyConstraintError)
       })
+    })
+  })
+
+  describe('tries to create a folder in another user folder', () => {
+    let folderId: string
+    beforeAll(async () => {
+      const newUser = await prismaClient.user.create({
+        data: {
+          name: 'new user',
+          email: 'new_user_email@mail.com'
+        }
+      })
+      const newFolder = await prismaClient.folder.create({
+        data: {
+          name: 'hahah u dont have access',
+          userId: newUser.id
+        }
+      })
+      folderId = newFolder.id
+    })
+
+    it('should throw', () => {
+      expect(async() => {
+        await createFolder.exec({
+          name: 'not my folder',
+          userId: user.id as string,
+          parentId: folderId
+        })
+      }).rejects.toThrowError(PermissionError)
     })
   })
 })
