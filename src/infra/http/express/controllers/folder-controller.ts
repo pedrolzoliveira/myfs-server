@@ -11,7 +11,12 @@ export class FolderController {
   ) {}
 
   async create(req: Request, res: Response) {
-    const folder = await this.createFolder.exec(req.body)
+    const data = {
+      name: req.body.name,
+      userId: req.session.user?.id as string,
+      parentId: req.body.parentId
+    }
+    const folder = await this.createFolder.exec(data)
     return res.status(HttpStatusCode.CREATED).send(
       transformResponse({
         payload: { folder },

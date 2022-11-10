@@ -2,6 +2,7 @@ import { Folder } from '../domain/model/folder'
 
 export interface CreateFolderData {
   name: string
+  userId: string
   parentId?: string
 }
 

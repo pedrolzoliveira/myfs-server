@@ -19,7 +19,7 @@ export function createServer() {
   const folderRepository = createFolderPrismaRepository(prismaClient)
   const userRepository = createUserPrismaRepository(prismaClient)
 
-  const createFolderUseCase = createCreateFolder(folderRepository)
+  const createFolderUseCase = createCreateFolder(folderRepository, userRepository)
   const getFolderUseCase = createGetFolder(folderRepository)
   const createUser = createCreateUser(userRepository)
   const signIn = createSignIn(userRepository)

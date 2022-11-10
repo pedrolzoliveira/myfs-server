@@ -21,6 +21,8 @@ model Folder {
     id String @id @default(uuid())
     name String
     parentId String?
+    userId String
+    owner User @relation(fields: [userId], references: [id])
     parent Folder? @relation("parentChildren", fields: [parentId], references: [id])
     children Folder[] @relation("parentChildren") 
     files File[]
@@ -33,4 +35,5 @@ model User {
     name String
     email String @unique
     admin Boolean @default(false)
+    folders Folder[]
 }

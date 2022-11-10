@@ -10,8 +10,8 @@ export class FolderPrismaRepository implements FindFolderRepository, FindAllFold
     private readonly prismaClient: PrismaClient
   ) {}
 
-  createFolder(data: CreateFolderData) {
-    return this.prismaClient.folder.create({ data })
+  async createFolder(data: CreateFolderData) {
+    return await this.prismaClient.folder.create({ data })
   }
 
   find(data: FindFolderData) {
