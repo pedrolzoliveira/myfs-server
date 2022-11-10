@@ -11,6 +11,7 @@ import { createErrorHandler } from './error-handler-factory'
 import { createFolderController } from './folder-controller-factory'
 import { createUserController } from './user-controller-factory'
 import { createApplicationRoutes } from './application-routes-factory'
+import { createUserHasFolderPermission } from './use-cases/user-has-folder-permission-factory'
 
 export function createServer() {
   const prismaClient = createPrismaClient()
@@ -19,10 +20,11 @@ export function createServer() {
   const folderRepository = createFolderPrismaRepository(prismaClient)
   const userRepository = createUserPrismaRepository(prismaClient)
 
-  const createFolderUseCase = createCreateFolder(folderRepository, userRepository)
   const getFolderUseCase = createGetFolder(folderRepository)
+  const userHasFolderPermission = createUserHasFolderPermission(userRepository, folderRepository)
   const createUser = createCreateUser(userRepository)
   const signIn = createSignIn(userRepository)
+  const createFolderUseCase = createCreateFolder(folderRepository, userRepository, userHasFolderPermission)
 
   const folderController = createFolderController(createFolderUseCase, getFolderUseCase)
   const userController = createUserController(createUser, signIn)

@@ -1,5 +1,3 @@
-import { CreateFolderRepository } from '../../data/create-folder-repository'
-import { FindUserRepository } from '../../data/find-user-repository'
 import { Folder } from '../model/folder'
 
 export interface CreateFolderData {
@@ -9,7 +7,5 @@ export interface CreateFolderData {
 }
 
 export interface CreateFolder {
-  readonly createFolderRepository: CreateFolderRepository
-  readonly findUserRepository: FindUserRepository
   exec: (data: CreateFolderData) => Promise<Folder>
 }

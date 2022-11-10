@@ -3,6 +3,8 @@ import { CreateFolder } from '../../../../domain/use-cases/create-folder'
 import { GetFolder } from '../../../../domain/use-cases/get-folder'
 import { transformResponse } from '../../transformers/response-transformer'
 import { HttpStatusCode } from '../../http-status-code'
+import { PermissionError } from '../../../../application/errors/permission-error'
+import { HttpError } from '../../http-error'
 
 export class FolderController {
   constructor (
@@ -11,18 +13,25 @@ export class FolderController {
   ) {}
 
   async create(req: Request, res: Response) {
-    const data = {
-      name: req.body.name,
-      userId: req.session.user?.id as string,
-      parentId: req.body.parentId
+    try {
+      const data = {
+        name: req.body.name,
+        userId: req.session.user?.id as string,
+        parentId: req.body.parentId
+      }
+      const folder = await this.createFolder.exec(data)
+      return res.status(HttpStatusCode.CREATED).send(
+        transformResponse({
+          payload: { folder },
+          message: 'Folder created successfully'
+        })
+      )
+    } catch (e) {
+      if (e instanceof PermissionError) {
+        throw new HttpError(403, "You don't have permission over this file.")
+      }
+      throw e
     }
-    const folder = await this.createFolder.exec(data)
-    return res.status(HttpStatusCode.CREATED).send(
-      transformResponse({
-        payload: { folder },
-        message: 'Folder created successfully'
-      })
-    )
   }
 
   async find(req: Request, res: Response) {
