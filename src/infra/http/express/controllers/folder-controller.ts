@@ -5,6 +5,7 @@ import { transformResponse } from '../../transformers/response-transformer'
 import { HttpStatusCode } from '../../http-status-code'
 import { PermissionError } from '../../../../application/errors/permission-error'
 import { HttpError } from '../../http-error'
+import { ForeignKeyConstraintError } from '../../../../data/errors/foreign-key-constraint-error'
 
 export class FolderController {
   constructor (
@@ -27,6 +28,9 @@ export class FolderController {
         })
       )
     } catch (e) {
+      if (e instanceof ForeignKeyConstraintError) {
+        if (e.targetTable === 'Folder') throw new HttpError(404, "Parent folder doesn't exists")
+      }
       if (e instanceof PermissionError) {
         throw new HttpError(403, "You don't have permission over this file.")
       }

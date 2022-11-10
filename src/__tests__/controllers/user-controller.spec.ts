@@ -27,6 +27,10 @@ describe('UserController', () => {
           expect(response.body.message).toBe('User created succesfully')
         })
 
+        it('returns ok true', () => {
+          expect(response.body.ok).toBe(true)
+        })
+
         it('returns a 201', () => {
           expect(response.statusCode).toBe(201)
         })
@@ -39,6 +43,10 @@ describe('UserController', () => {
           response = await request(server.app).post('/users').send({ email: 'totally_right@email.com' })
         })
 
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+
         it('returns a 400', () => {
           expect(response.statusCode).toBe(400)
         })
@@ -49,6 +57,10 @@ describe('UserController', () => {
           response = await request(server.app).post('/users').send({ name: 'john' })
         })
 
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+
         it('returns a 400', () => {
           expect(response.statusCode).toBe(400)
         })
@@ -57,6 +69,10 @@ describe('UserController', () => {
       describe('tries to create a user with invalid email', () => {
         beforeAll(async() => {
           response = await request(server.app).post('/users').send({ name: 'Totally valid name', email: 'not valid email' })
+        })
+
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
         })
 
         it('returns a 400', () => {
@@ -72,6 +88,10 @@ describe('UserController', () => {
 
         it('response with the rigth message', () => {
           expect(response.body.message).toBe('Email used_email@mail.com is already taken.')
+        })
+
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
         })
 
         it('returns a 409', () => {
@@ -102,6 +122,10 @@ describe('UserController', () => {
           expect(response.body.message).toBe('LoggedIn successfully')
         })
 
+        it('returns ok true', () => {
+          expect(response.body.ok).toBe(true)
+        })
+
         it('returns 200', () => {
           expect(response.statusCode).toBe(200)
         })
@@ -116,6 +140,10 @@ describe('UserController', () => {
 
         it('returns the right message', () => {
           expect(response.body.message).toBe('User not found')
+        })
+
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
         })
 
         it('returns a 404', () => {
