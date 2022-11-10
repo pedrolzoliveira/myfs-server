@@ -1,4 +1,4 @@
-import { createDeleteFolder } from '../../factories/delete-folder-factory'
+import { createDeleteFolder } from '../../factories/use-cases/delete-folder-factory'
 import { createFolderPrismaRepository } from '../../factories/folder-prisma-repository-factory'
 import { createPrismaClient } from '../../factories/prisma-client-factory'
 import { DeleteFolder } from '../../domain/use-cases/delete-folder'

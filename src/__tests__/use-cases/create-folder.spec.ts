@@ -1,6 +1,6 @@
 import { Folder } from '../../domain/model/folder'
 import { CreateFolder } from '../../domain/use-cases/create-folder'
-import { createCreateFolder } from '../../factories/create-folder-factory'
+import { createCreateFolder } from '../../factories/use-cases/create-folder-factory'
 import { createFolderPrismaRepository } from '../../factories/folder-prisma-repository-factory'
 import { createPrismaClient } from '../../factories/prisma-client-factory'
 
