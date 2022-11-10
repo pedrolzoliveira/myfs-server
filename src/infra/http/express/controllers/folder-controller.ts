@@ -32,7 +32,7 @@ export class FolderController {
         if (e.targetTable === 'Folder') throw new HttpError(404, "Parent folder doesn't exists")
       }
       if (e instanceof PermissionError) {
-        throw new HttpError(403, "You don't have permission over this file.")
+        throw new HttpError(403, "You don't have permission over this folder.")
       }
       throw e
     }

@@ -2,12 +2,16 @@ import { createServer } from '../../factories/server-factory'
 import { Server } from '../../infra/http/express/server'
 import request, { Response } from 'supertest'
 import { Folder } from '../../domain/model/folder'
+import { PrismaClient } from '@prisma/client'
+import { createPrismaClient } from '../../factories/prisma-client-factory'
 
-describe.only('FolderController', () => {
+describe('FolderController', () => {
   let server: Server
+  let prismaClient: PrismaClient
 
   beforeAll(() => {
     server = createServer()
+    prismaClient = createPrismaClient()
   })
 
   describe('POST /folders', () => {
@@ -15,7 +19,7 @@ describe.only('FolderController', () => {
     let cookie: string[]
 
     beforeAll(async () => {
-      await request(server.app).post('/users').send({ name: 'my logged user', email: 'logged_user@mail.com' })
+      await prismaClient.user.create({ data: { name: 'my logged user', email: 'logged_user@mail.com' } })
       const r = await request(server.app).post('/users/sign-in').send({ email: 'logged_user@mail.com' })
       cookie = r.headers['set-cookie']
     })
@@ -98,28 +102,26 @@ describe.only('FolderController', () => {
         })
       })
 
-      // describe('tries to create a folder without the right permission', () => {
-      //   beforeAll(async () => {
-      //     await request(server.app).post('/users').send({ name: 'my logged new user', email: 'new_logged_user@mail.com' })
-      //     const loginResponse = await request(server.app).post('/users/sign-in').send({ email: 'new_logged_user@mail.com' })
-      //     const folderResponse = await request(server.app).post('folders').set('Cookie', loginResponse.headers['set-cookie']).send({ name: 'new cool folder' })
-      //     const parentId = folderResponse.body.payload.folder.id
+      describe('tries to create a folder without the right permission', () => {
+        beforeAll(async () => {
+          const user = await prismaClient.user.create({ data: { name: 'new user', email: 'my_email_doesnt_metter@gmail.com' } })
+          const folder = await prismaClient.folder.create({ data: { name: 'My folder that u dont have access', userId: user.id } })
 
-      //     response = await request(server.app).post('/folders').set('Cookie', cookie).send({ name: 'forbiden children', parentId })
-      //   })
+          response = await request(server.app).post('/folders').set('Cookie', cookie).send({ name: 'forbiden children', parentId: folder.id })
+        })
 
-      //   it('returns the right message', () => {
-      //     expect(response.body.message).toBe("You don't have permission on this folder")
-      //   })
+        it('returns the right message', () => {
+          expect(response.body.message).toBe("You don't have permission over this folder.")
+        })
 
-      //   it('returns ok false', () => {
-      //     expect(response.body.ok).toBe(false)
-      //   })
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
 
-      //   it('returns 403', () => {
-      //     expect(response.statusCode).toBe(403)
-      //   })
-      // })
+        it('returns 403', () => {
+          expect(response.statusCode).toBe(403)
+        })
+      })
     })
   })
 })
