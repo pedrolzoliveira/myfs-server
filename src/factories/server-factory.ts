@@ -1,5 +1,6 @@
 import { Server } from '../infra/http/express/server'
 import { createApplicationRoutes } from './application-routes-factory'
+import { createAuthenticator } from './authenticator-factory'
 import { createCreateFolder } from './create-folder-factory'
 import { createCreateUser } from './create-user-factory'
 import { createErrorHandler } from './error-handler-factory'
@@ -13,6 +14,7 @@ import { createUserPrismaRepository } from './user-prisma-repository'
 
 export function createServer() {
   const prismaClient = createPrismaClient()
+  const authenticator = createAuthenticator()
 
   const folderRepository = createFolderPrismaRepository(prismaClient)
   const userRepository = createUserPrismaRepository(prismaClient)
@@ -25,7 +27,7 @@ export function createServer() {
   const folderController = createFolderController(createFolderUseCase, getFolderUseCase)
   const userController = createUserController(createUser, signIn)
 
-  const applicationRoutes = createApplicationRoutes(folderController, userController)
+  const applicationRoutes = createApplicationRoutes(authenticator, folderController, userController)
 
   const errorHandler = createErrorHandler()
 
