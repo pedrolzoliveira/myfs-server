@@ -1,4 +1,3 @@
-import { CreateUserRepository } from '../../data/create-user-repository'
 import { User } from '../model/user'
 
 export interface CreateUserData {
@@ -7,6 +6,5 @@ export interface CreateUserData {
 }
 
 export interface CreateUser {
-  createUserRepository: CreateUserRepository
   exec: (data: CreateUserData) => Promise<User>
 }

@@ -1,4 +1,3 @@
-import { UpdateFolderRepository } from '../../data/update-folder-repository'
 import { Folder } from '../model/folder'
 
 export interface RenameFolderData {
@@ -7,6 +6,5 @@ export interface RenameFolderData {
 }
 
 export interface RenameFolder {
-  updateFolderRepository: UpdateFolderRepository
   exec: (data: RenameFolderData) => Promise<Folder>
 }

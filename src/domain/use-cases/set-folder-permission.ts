@@ -1,4 +1,3 @@
-import { UpsertFolderPermissionRepository } from '../../data/upsert-folder-permission-repository'
 import { FolderPermission } from '../model/folder-permission'
 
 export interface SetFolderPermissionData {
@@ -8,6 +7,5 @@ export interface SetFolderPermissionData {
 }
 
 export interface SetFolderPermission {
-  readonly upsertFolderPermission: UpsertFolderPermissionRepository
   exec: (data: SetFolderPermissionData) => Promise<FolderPermission>
 }
