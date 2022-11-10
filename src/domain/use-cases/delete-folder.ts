@@ -1,4 +1,5 @@
 export interface DeleteFolderData {
+  userId: string
   id: string
 }
 
