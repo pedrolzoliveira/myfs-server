@@ -3,7 +3,7 @@ import { Server } from '../../infra/http/express/server'
 import request, { Response } from 'supertest'
 import { User } from '../../domain/model/user'
 
-describe.only('UserController', () => {
+describe('UserController', () => {
   let server: Server
   let response: Response
 
