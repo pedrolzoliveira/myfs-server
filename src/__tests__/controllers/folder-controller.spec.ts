@@ -52,7 +52,7 @@ describe('FolderController', () => {
     })
 
     describe('4XX', () => {
-      describe('tries to create a file without being logged', () => {
+      describe('tries to create a folder without being logged', () => {
         beforeAll(async () => {
           response = await request(server.app).post('/folders').send({ name: 'Cool folder' })
         })
