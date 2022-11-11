@@ -2,7 +2,7 @@ import { User } from '../../domain/model/user'
 import { CreateUser } from '../../domain/use-cases/create-user'
 import { createCreateUser } from '../../factories/use-cases/create-user-factory'
 import { createPrismaClient } from '../../factories/prisma-client-factory'
-import { createUserPrismaRepository } from '../../factories/user-prisma-repository'
+import { createUserPrismaRepository } from '../../factories/repositories/user-prisma-repository'
 
 describe('Create User Use Case', () => {
   let createUser: CreateUser

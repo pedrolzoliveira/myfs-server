@@ -3,10 +3,10 @@ import { EmptyResultError } from '../../application/errors/empty-result-error'
 import { Folder } from '../../domain/model/folder'
 import { User } from '../../domain/model/user'
 import { UserHasFolderPermission } from '../../domain/use-cases/user-has-folder-permission'
-import { createFolderPrismaRepository } from '../../factories/folder-prisma-repository-factory'
+import { createFolderPrismaRepository } from '../../factories/repositories/folder-prisma-repository-factory'
 import { createPrismaClient } from '../../factories/prisma-client-factory'
 import { createUserHasFolderPermission } from '../../factories/use-cases/user-has-folder-permission-factory'
-import { createUserPrismaRepository } from '../../factories/user-prisma-repository'
+import { createUserPrismaRepository } from '../../factories/repositories/user-prisma-repository'
 
 describe.only('User Has Folder Permission Use Case', () => {
   let userHasFolderPermission: UserHasFolderPermission
