@@ -7,7 +7,6 @@ export class FilePrismaRepository implements CreateFileRepository {
   ) {}
 
   async create(data: CreateFileData) {
-    console.log({ data })
     return await this.prismaClient.file.create({
       data: {
         name: data.name,

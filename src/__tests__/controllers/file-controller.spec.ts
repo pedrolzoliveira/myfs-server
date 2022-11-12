@@ -35,6 +35,10 @@ describe('FileController', () => {
             .attach('file', createReadStream(__filename))
         })
 
+        it('returns the right name', () => {
+          expect(response.body.payload.file.name).toBe('file-controller.spec.ts')
+        })
+
         it('returns the right message', () => {
           expect(response.body.message).toBe('File created successfully')
         })

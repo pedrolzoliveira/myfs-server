@@ -1,7 +1,8 @@
 const { PrismaClient } = require('@prisma/client')
 
 async function main () {
-  console.log('deleting db...')
+  process.env.DATABASE_URL = process.env.TEST_DATABASE_URL
+  console.log('\ndeleting db...\n')
   const prismaClient = new PrismaClient()
   await prismaClient.file.deleteMany()
   await prismaClient.folder.deleteMany()
