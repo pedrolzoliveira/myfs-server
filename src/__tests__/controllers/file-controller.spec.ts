@@ -24,7 +24,7 @@ describe('FileController', () => {
     cookie = r.headers['set-cookie']
   })
 
-  describe('POST /files/upload-file', () => {
+  describe('POST /files/upload', () => {
     describe('4XX', () => {
       describe('tries to upload a file without being logged in', () => {
         beforeAll(async() => {
