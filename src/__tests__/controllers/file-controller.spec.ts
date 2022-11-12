@@ -3,8 +3,10 @@ import { Server } from '../../infra/http/express/server'
 import request, { Response } from 'supertest'
 import { PrismaClient } from '@prisma/client'
 import { createPrismaClient } from '../../factories/prisma-client-factory'
+import { createReadStream } from 'fs'
+import path from 'path'
 
-describe('FileController', () => {
+describe.only('FileController', () => {
   let server: Server
   let prismaClient: PrismaClient
   let folderId: string
@@ -25,10 +27,35 @@ describe('FileController', () => {
   })
 
   describe('POST /files/upload', () => {
+    describe('2XX', () => {
+      describe('uploads the file to the server', () => {
+        beforeAll(async () => {
+          response = await request(server.app)
+            .post(`/files/upload?folderId=${folderId}`)
+            .set('Cookie', cookie)
+            .attach('file', createReadStream(__filename))
+        })
+
+        it('returns the right message', () => {
+          expect(response.body.message).toBe('File created successfully')
+        })
+
+        it('returns ok true', () => {
+          expect(response.body.ok).toBe(true)
+        })
+
+        it('returns 201', () => {
+          expect(response.statusCode).toBe(201)
+        })
+      })
+    })
+
     describe('4XX', () => {
       describe('tries to upload a file without being logged in', () => {
         beforeAll(async() => {
-          response = await request(server.app).post(`/files/upload?folderId=${folderId}`).send()
+          response = await request(server.app)
+            .post(`/files/upload?folderId=${folderId}`)
+            .attach('file', createReadStream(__filename))
         })
 
         it('returns the right message', () => {
@@ -47,7 +74,10 @@ describe('FileController', () => {
           const user = await prismaClient.user.create({ data: { name: 'owner2', email: 'owner2_folder@mail.com' } })
           const folder = await prismaClient.folder.create({ data: { name: 'testing2', userId: user.id } })
 
-          response = await request(server.app).post(`/files/upload?folderId=${folder.id}`).set('Cookie', cookie).send()
+          response = await request(server.app)
+            .post(`/files/upload?folderId=${folder.id}`)
+            .set('Cookie', cookie)
+            .attach('file', createReadStream(__filename))
         })
 
         it('returns the right message', () => {

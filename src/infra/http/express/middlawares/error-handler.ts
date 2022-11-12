@@ -14,6 +14,7 @@ export class ErrorHandler {
         })
       )
     }
+    if (process.env.NODE_ENV === 'test') console.error(error)
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(
       transformResponse({
         errors: [error],

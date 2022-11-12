@@ -36,10 +36,11 @@ export class FileController {
   }
 
   async create(req: CreateFileRequest, res: Response) {
+    console.log({ file: req.file })
     const file = await this.createFile.exec({
-      name: req.file?.filename as string,
+      name: req.file?.originalname as string,
       folderId: req.query.folderId,
-      path: req.file?.path as string
+      location: req.file?.path as string
     })
     return res.status(HttpStatusCode.CREATED).send(
       transformResponse({

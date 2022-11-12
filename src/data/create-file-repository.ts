@@ -3,7 +3,7 @@ import { File } from '../domain/model/file'
 export interface CreateFileData {
   name: string
   folderId: string
-  path: string
+  location: string
 }
 
 export interface CreateFileRepository {

@@ -10,7 +10,7 @@ datasource db {
 model File {
     id String @id @default(uuid())
     name String
-    path String
+    location String
     folderId String
     folder Folder @relation(fields: [folderId], references: [id])
     createdAt DateTime @default(now())
