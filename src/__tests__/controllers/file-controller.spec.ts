@@ -93,6 +93,27 @@ describe('FileController', () => {
           expect(response.statusCode).toBe(403)
         })
       })
+
+      describe('tries to send a request without a file', () => {
+        beforeAll(async() => {
+          response = await request(server.app)
+            .post(`/files/upload?folderId=${folderId}`)
+            .set('Cookie', cookie)
+            .send()
+        })
+
+        it('returns the right message', () => {
+          expect(response.body.message).toBe('File not sent')
+        })
+
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+
+        it('returns 400', () => {
+          expect(response.statusCode).toBe(400)
+        })
+      })
     })
   })
 })

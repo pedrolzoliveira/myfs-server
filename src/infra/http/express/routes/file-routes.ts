@@ -20,6 +20,7 @@ export class FileRoutes {
       this.authenticator.handle,
       this.fileController.checkPermission.bind(fileController),
       this.uploadHandler.handle(),
+      this.uploadHandler.validateRequest,
       this.fileController.create.bind(fileController)
     )
   }
