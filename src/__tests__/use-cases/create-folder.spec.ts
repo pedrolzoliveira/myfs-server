@@ -9,8 +9,9 @@ import { createUserHasFolderPermission } from '../../factories/use-cases/user-ha
 import { ForeignKeyConstraintError } from '../../data/errors/foreign-key-constraint-error'
 import { PrismaClient } from '@prisma/client'
 import { PermissionError } from '../../application/errors/permission-error'
+import { SameNameError } from '../../application/errors/same-name-error'
 
-describe('Create Folder Use Case', () => {
+describe.only('Create Folder Use Case', () => {
   let createFolder: CreateFolder
   let user: User
   let prismaClient: PrismaClient
@@ -76,6 +77,14 @@ describe('Create Folder Use Case', () => {
             userId: user.id as string
           })
         }).rejects.toThrowError(ForeignKeyConstraintError)
+      })
+    })
+
+    describe('tries to create a folder with a name already used in a parent folder', () => {
+      it('throws', () => {
+        expect(async () => {
+          await createFolder.exec({ name: 'children folder', parentId: parentFolderId, userId: user.id as string })
+        }).rejects.toThrow(SameNameError)
       })
     })
   })
