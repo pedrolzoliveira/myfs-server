@@ -45,7 +45,7 @@ describe('FolderController', () => {
           expect(response.body.ok).toBe(true)
         })
 
-        it('should return 201', () => {
+        it('returns 201', () => {
           expect(response.statusCode).toBe(201)
         })
       })
@@ -77,13 +77,27 @@ describe('FolderController', () => {
           expect(response.body.ok).toBe(true)
         })
 
-        it('should return 201', () => {
+        it('returns 201', () => {
           expect(response.statusCode).toBe(201)
         })
       })
     })
 
     describe('4XX', () => {
+      describe('tries to create a folder with an empty payload', () => {
+        beforeAll(async() => {
+          response = await request(server.app).post('/folders').set('Cookie', cookie).send({})
+        })
+
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+
+        it('returns 400', () => {
+          expect(response.statusCode).toBe(400)
+        })
+      })
+
       describe('tries to create a folder without being logged', () => {
         beforeAll(async () => {
           response = await request(server.app).post('/folders').send({ name: 'Cool folder' })
@@ -99,20 +113,6 @@ describe('FolderController', () => {
 
         it('returns 401', () => {
           expect(response.statusCode).toBe(401)
-        })
-      })
-
-      describe('tries to create a folder with an empty payload', () => {
-        beforeAll(async() => {
-          response = await request(server.app).post('/folders').set('Cookie', cookie).send({})
-        })
-
-        it('returns ok false', () => {
-          expect(response.body.ok).toBe(false)
-        })
-
-        it('should return 400', () => {
-          expect(response.statusCode).toBe(400)
         })
       })
 
