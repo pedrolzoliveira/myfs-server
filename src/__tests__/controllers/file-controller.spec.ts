@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client'
 import { createPrismaClient } from '../../factories/prisma-client-factory'
 import { createReadStream } from 'fs'
 
-describe.only('FileController', () => {
+describe('FileController', () => {
   let server: Server
   let prismaClient: PrismaClient
   let folderId: string
