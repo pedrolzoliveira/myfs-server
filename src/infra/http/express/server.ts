@@ -10,7 +10,7 @@ export class Server {
   ) {
     this.app = express()
     this.app.use(json())
-    this.app.use(session({ secret: 'lmao i love pizza', saveUninitialized: false }))
+    this.app.use(session({ secret: 'lmao i love pizza', saveUninitialized: false, resave: false }))
     this.app.use(routes)
     this.app.use(this.errorHandler.handle)
   }
