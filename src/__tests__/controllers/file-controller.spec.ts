@@ -4,7 +4,6 @@ import request, { Response } from 'supertest'
 import { PrismaClient } from '@prisma/client'
 import { createPrismaClient } from '../../factories/prisma-client-factory'
 import { createReadStream } from 'fs'
-import path from 'path'
 
 describe.only('FileController', () => {
   let server: Server
