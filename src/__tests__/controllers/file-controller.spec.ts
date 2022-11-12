@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client'
 import { createPrismaClient } from '../../factories/prisma-client-factory'
 import { createReadStream } from 'fs'
 
-describe('FileController', () => {
+describe.only('FileController', () => {
   let server: Server
   let prismaClient: PrismaClient
   let folderId: string
@@ -37,6 +37,31 @@ describe('FileController', () => {
 
         it('returns the right name', () => {
           expect(response.body.payload.file.name).toBe('file-controller.spec.ts')
+        })
+
+        it('returns the right message', () => {
+          expect(response.body.message).toBe('File created successfully')
+        })
+
+        it('returns ok true', () => {
+          expect(response.body.ok).toBe(true)
+        })
+
+        it('returns 201', () => {
+          expect(response.statusCode).toBe(201)
+        })
+      })
+
+      describe('uploads the same file twice', () => {
+        beforeAll(async () => {
+          response = await request(server.app)
+            .post(`/files/upload?folderId=${folderId}`)
+            .set('Cookie', cookie)
+            .attach('file', createReadStream(__filename))
+        })
+
+        it('returns the right name', () => {
+          expect(response.body.payload.file.name).toBe('file-controller.spec.ts (1)')
         })
 
         it('returns the right message', () => {
