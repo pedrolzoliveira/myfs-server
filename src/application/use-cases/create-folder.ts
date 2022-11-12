@@ -5,6 +5,7 @@ import { FindUserRepository } from '../../data/find-user-repository'
 import { CreateFolder as ICreateFolder, CreateFolderData } from '../../domain/use-cases/create-folder'
 import { UserHasFolderPermission } from '../../domain/use-cases/user-has-folder-permission'
 import { PermissionError } from '../errors/permission-error'
+import { SameNameError } from '../errors/same-name-error'
 export class CreateFolder implements ICreateFolder {
   constructor(
     private readonly folderRepository: CreateFolderRepository & FindFolderRepository,
@@ -18,8 +19,12 @@ export class CreateFolder implements ICreateFolder {
       throw new ForeignKeyConstraintError('Folder', 'userId', 'User')
     }
     if (data.parentId) {
-      const folder = await this.folderRepository.find({ id: data.parentId })
-      if (!folder) throw new ForeignKeyConstraintError('Folder', 'parentId', 'Folder')
+      const [sameNameFolder, parentFolder] = await Promise.all([
+        this.folderRepository.find({ name: data.name, parentId: data.parentId }),
+        this.folderRepository.find({ id: data.parentId })
+      ])
+      if (!parentFolder) throw new ForeignKeyConstraintError('Folder', 'parentId', 'Folder')
+      if (sameNameFolder) throw new SameNameError()
 
       const hasPermission = await this.userHasFolderPermission.exec({ userId: data.userId, folderId: data.parentId })
       if (!hasPermission) throw new PermissionError()

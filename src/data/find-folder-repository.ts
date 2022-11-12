@@ -1,7 +1,9 @@
 import { Folder } from '../domain/model/folder'
 
 export interface FindFolderData {
-  id: string
+  id?: string
+  name?: string
+  parentId?: string
 }
 
 export interface FindFolderRepository {

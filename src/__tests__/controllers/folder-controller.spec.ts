@@ -5,7 +5,7 @@ import { Folder } from '../../domain/model/folder'
 import { PrismaClient } from '@prisma/client'
 import { createPrismaClient } from '../../factories/prisma-client-factory'
 
-describe('FolderController', () => {
+describe.only('FolderController', () => {
   let server: Server
   let prismaClient: PrismaClient
 
@@ -35,6 +35,38 @@ describe('FolderController', () => {
 
         it('returns the right payload', () => {
           expect(response.body.payload.folder).toStrictEqual(folder)
+        })
+
+        it('returns the right message', () => {
+          expect(response.body.message).toBe('Folder created successfully')
+        })
+
+        it('returns ok true', () => {
+          expect(response.body.ok).toBe(true)
+        })
+
+        it('should return 201', () => {
+          expect(response.statusCode).toBe(201)
+        })
+      })
+
+      describe('creating a children folder', () => {
+        let folder: Folder
+
+        beforeAll(async () => {
+          const parentFolderResponse = await request(server.app).post('/folders').set('Cookie', cookie).send({ name: 'My parent folder' })
+          const parentFolder: Folder = parentFolderResponse.body.payload.folder
+
+          response = await request(server.app).post('/folders').set('Cookie', cookie).send({ name: 'My children folder', parentId: parentFolder.id })
+          folder = response.body.payload.folder
+        })
+
+        it('returns the right payload', () => {
+          expect(response.body.payload.folder).toStrictEqual(folder)
+        })
+
+        it('returns folder with parentId not null', () => {
+          expect(response.body.payload.folder.parentId).toBeDefined()
         })
 
         it('returns the right message', () => {
@@ -90,7 +122,7 @@ describe('FolderController', () => {
         })
 
         it('returns the right message', () => {
-          expect(response.body.message).toBe("Parent folder doesn't exists")
+          expect(response.body.message).toBe("Parent folder doesn't exists.")
         })
 
         it('returns ok false', () => {
@@ -120,6 +152,28 @@ describe('FolderController', () => {
 
         it('returns 403', () => {
           expect(response.statusCode).toBe(403)
+        })
+      })
+
+      describe('tries to create a children folder with a name already being used inside parent folder', () => {
+        beforeAll(async () => {
+          const parentFolderResponse = await request(server.app).post('/folders').set('Cookie', cookie).send({ name: 'My parent folder' })
+          const parentFolder: Folder = parentFolderResponse.body.payload.folder
+
+          await request(server.app).post('/folders').set('Cookie', cookie).send({ name: 'My children folder', parentId: parentFolder.id })
+          response = await request(server.app).post('/folders').set('Cookie', cookie).send({ name: 'My children folder', parentId: parentFolder.id })
+        })
+
+        it('returns the right message', () => {
+          expect(response.body.message).toBe("There's already a folder with this name inside the parent folder.")
+        })
+
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+
+        it('returns 409', () => {
+          expect(response.statusCode).toBe(409)
         })
       })
     })

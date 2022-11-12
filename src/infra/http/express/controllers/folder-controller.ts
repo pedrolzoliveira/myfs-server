@@ -6,6 +6,7 @@ import { HttpStatusCode } from '../../http-status-code'
 import { PermissionError } from '../../../../application/errors/permission-error'
 import { HttpError } from '../../http-error'
 import { ForeignKeyConstraintError } from '../../../../data/errors/foreign-key-constraint-error'
+import { SameNameError } from '../../../../application/errors/same-name-error'
 
 export class FolderController {
   constructor (
@@ -29,10 +30,13 @@ export class FolderController {
       )
     } catch (e) {
       if (e instanceof ForeignKeyConstraintError) {
-        if (e.targetTable === 'Folder') throw new HttpError(404, "Parent folder doesn't exists")
+        if (e.targetTable === 'Folder') throw new HttpError(404, "Parent folder doesn't exists.")
       }
       if (e instanceof PermissionError) {
         throw new HttpError(403, "You don't have permission over this folder.")
+      }
+      if (e instanceof SameNameError) {
+        throw new HttpError(409, "There's already a folder with this name inside the parent folder.")
       }
       throw e
     }

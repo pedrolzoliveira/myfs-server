@@ -15,7 +15,11 @@ export class FolderPrismaRepository implements FindFolderRepository, FindAllFold
   }
 
   find(data: FindFolderData) {
-    return this.prismaClient.folder.findUnique({ where: { id: data.id } })
+    return this.prismaClient.folder.findFirst({
+      where: {
+        ...data
+      }
+    })
   }
 
   findAll(data: FindAllData) {
