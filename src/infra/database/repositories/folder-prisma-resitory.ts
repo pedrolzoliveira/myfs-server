@@ -39,9 +39,18 @@ export class FolderPrismaRepository implements FindFolderRepository, FindAllFold
   }
 
   async updateFolder(data: UpdateFolderData) {
-    const folder = await this.prismaClient.folder.findUnique({ where: { id: data.id } })
-    if (!folder) throw new Error(`Folder with id ${data.id} not found`)
-    folder.name = data.name
+    console.log(
+      { data }
+    )
+
+    const folder = await this.prismaClient.folder.update({
+      where: {
+        id: data.id
+      },
+      data: {
+        name: data.name
+      }
+    })
     return folder
   }
 

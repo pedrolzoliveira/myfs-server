@@ -32,7 +32,8 @@ export class RenameFolder implements IRenameFolder {
       if (!isNameAvailble) throw new SameNameError()
     }
     return await this.folderRepository.updateFolder({
-      ...data
+      id: data.id,
+      name: data.name
     })
   }
 }

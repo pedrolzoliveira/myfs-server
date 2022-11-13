@@ -8,6 +8,8 @@ import { createPrismaClient } from '../../factories/prisma-client-factory'
 describe('FolderController', () => {
   let server: Server
   let prismaClient: PrismaClient
+  let response: Response
+  let cookie: string[]
 
   beforeAll(() => {
     server = createServer()
@@ -15,9 +17,6 @@ describe('FolderController', () => {
   })
 
   describe('POST /folders', () => {
-    let response: Response
-    let cookie: string[]
-
     beforeAll(async () => {
       await prismaClient.user.create({ data: { name: 'my logged user', email: 'logged_user@mail.com' } })
       const r = await request(server.app).post('/users/sign-in').send({ email: 'logged_user@mail.com' })
@@ -174,6 +173,102 @@ describe('FolderController', () => {
 
         it('returns 409', () => {
           expect(response.statusCode).toBe(409)
+        })
+      })
+    })
+  })
+
+  describe('PUT /folders', () => {
+    describe('2XX', () => {})
+
+    describe('4XX', () => {
+      describe('tries to create a folder without being logged', () => {
+        beforeAll(async () => {
+          response = await request(server.app).put('/folders').send({ name: 'does not metter' })
+        })
+
+        it('returns the right message', () => {
+          expect(response.body.message).toBe('UNAUTHORIZED')
+        })
+
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+
+        it('returns 401', () => {
+          expect(response.statusCode).toBe(401)
+        })
+      })
+
+      describe('tries to create a folder with an empty payload', () => {
+        beforeAll(async() => {
+          response = await request(server.app).put('/folders').set('Cookie', cookie).send({})
+        })
+
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+
+        it('returns 400', () => {
+          expect(response.statusCode).toBe(400)
+        })
+      })
+
+      describe('tries to send a request without name', () => {
+        beforeAll(async () => {
+          response = await request(server.app).put('/folders').set('Cookie', cookie).send({ id: 'id doesnt really metter' })
+        })
+
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+
+        it('returns 400', () => {
+          expect(response.statusCode).toBe(400)
+        })
+      })
+
+      describe('tries to send a request without id', () => {
+        beforeAll(async () => {
+          response = await request(server.app).put('/folders').set('Cookie', cookie).send({ name: 'the name doesnt really metter' })
+        })
+
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+
+        it('returns 400', () => {
+          expect(response.statusCode).toBe(400)
+        })
+      })
+
+      describe('tries to change a folder that you do not own', () => {
+        let folderId: string
+        beforeAll(async () => {
+          const folderIDoNotOwn = await prismaClient.folder.create({
+            data: {
+              name: 'other cool folder',
+              owner: {
+                create: {
+                  name: 'cool name',
+                  email: 'coolemail@mail.com'
+                }
+              }
+            }
+          })
+          folderId = folderIDoNotOwn.id
+
+          response = await request(server.app).put('/folders').set('Cookie', cookie).send({ id: folderId, name: 'lmao that not going to work' })
+        })
+
+        it('returns the right message', () => {
+          expect(response.body.message).toBe("You don't have permission over this folder.")
+        })
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+        it('returns 403', () => {
+          expect(response.statusCode).toBe(403)
         })
       })
     })
