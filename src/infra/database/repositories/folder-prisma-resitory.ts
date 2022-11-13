@@ -39,10 +39,6 @@ export class FolderPrismaRepository implements FindFolderRepository, FindAllFold
   }
 
   async updateFolder(data: UpdateFolderData) {
-    console.log(
-      { data }
-    )
-
     const folder = await this.prismaClient.folder.update({
       where: {
         id: data.id
