@@ -3,7 +3,7 @@ import { ForeignKeyConstraintError } from '../../data/errors/foreign-key-constra
 import { FindFolderRepository } from '../../data/find-folder-repository'
 import { FindUserRepository } from '../../data/find-user-repository'
 import { CreateFolder as ICreateFolder, CreateFolderData } from '../../domain/use-cases/create-folder'
-import { IsNameAvailble } from '../../domain/use-cases/is-name-availble'
+import { IsFolderNameAvailble } from '../../domain/use-cases/is-folder-name-availble'
 import { UserHasFolderPermission } from '../../domain/use-cases/user-has-folder-permission'
 import { PermissionError } from '../errors/permission-error'
 import { SameNameError } from '../errors/same-name-error'
@@ -12,7 +12,7 @@ export class CreateFolder implements ICreateFolder {
     private readonly folderRepository: CreateFolderRepository & FindFolderRepository,
     private readonly findUserRepository: FindUserRepository,
     private readonly userHasFolderPermission: UserHasFolderPermission,
-    private readonly isNameAvailble: IsNameAvailble
+    private readonly isFolderNameAvailble: IsFolderNameAvailble
   ) {}
 
   async exec(data: CreateFolderData) {
@@ -22,7 +22,7 @@ export class CreateFolder implements ICreateFolder {
     }
     if (data.parentId) {
       const [nameAvailble, parentFolder] = await Promise.all([
-        this.isNameAvailble.exec({ name: data.name, parentFolderId: data.parentId }),
+        this.isFolderNameAvailble.exec({ name: data.name, parentFolderId: data.parentId }),
         this.folderRepository.find({ id: data.parentId })
       ])
       if (!parentFolder) throw new ForeignKeyConstraintError('Folder', 'parentId', 'Folder')

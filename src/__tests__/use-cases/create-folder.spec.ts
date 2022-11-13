@@ -10,7 +10,7 @@ import { ForeignKeyConstraintError } from '../../data/errors/foreign-key-constra
 import { PrismaClient } from '@prisma/client'
 import { PermissionError } from '../../application/errors/permission-error'
 import { SameNameError } from '../../application/errors/same-name-error'
-import { createIsNameAvailble } from '../../factories/use-cases/is-name-availble-factory'
+import { createIsNameAvailble } from '../../factories/use-cases/is-folder-name-availble-factory'
 
 describe('Create Folder Use Case', () => {
   let createFolder: CreateFolder

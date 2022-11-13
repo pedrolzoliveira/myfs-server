@@ -1,6 +1,6 @@
-import { IsNameAvailble } from '../../application/use-cases/is-name-availble'
+import { IsFolderNameAvailble } from '../../application/use-cases/is-name-availble'
 import { FindFolderRepository } from '../../data/find-folder-repository'
 
 export function createIsNameAvailble(findFolderRepository: FindFolderRepository) {
-  return new IsNameAvailble(findFolderRepository)
+  return new IsFolderNameAvailble(findFolderRepository)
 }

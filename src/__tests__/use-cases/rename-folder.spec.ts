@@ -6,7 +6,7 @@ import { RenameFolder } from '../../domain/use-cases/rename-folder'
 import { createPrismaClient } from '../../factories/prisma-client-factory'
 import { createFolderPrismaRepository } from '../../factories/repositories/folder-prisma-repository-factory'
 import { createUserPrismaRepository } from '../../factories/repositories/user-prisma-repository'
-import { createIsNameAvailble } from '../../factories/use-cases/is-name-availble-factory'
+import { createIsNameAvailble } from '../../factories/use-cases/is-folder-name-availble-factory'
 import { createRenameFolder } from '../../factories/use-cases/rename-folder-factory'
 import { createUserHasFolderPermission } from '../../factories/use-cases/user-has-folder-permission-factory'
 

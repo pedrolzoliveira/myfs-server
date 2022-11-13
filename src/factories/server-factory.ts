@@ -16,7 +16,7 @@ import { createFileController } from './controllers/file-controller-factory'
 import { createCreateFile } from './use-cases/create-file-factory'
 import { createFilePrismaRepository } from './repositories/file-prisma-repository-factory'
 import { createUploadHandler } from './upload-handler-factory'
-import { createIsNameAvailble } from './use-cases/is-name-availble-factory'
+import { createIsNameAvailble } from './use-cases/is-folder-name-availble-factory'
 import { createRenameFolder } from './use-cases/rename-folder-factory'
 
 export function createServer() {

@@ -14,6 +14,6 @@ export class UserHasFolderPermission implements IUserHasFolderPermission {
       this.findFolderRepository.find({ id: data.folderId })
     ])
     if (!user || !folder) throw new EmptyResultError()
-    return user?.id === folder?.userId
+    return user.id === folder.userId
   }
 }
