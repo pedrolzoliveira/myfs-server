@@ -5,7 +5,7 @@ import { Folder } from '../../domain/model/folder'
 import { PrismaClient } from '@prisma/client'
 import { createPrismaClient } from '../../factories/prisma-client-factory'
 
-describe('FolderController', () => {
+describe.only('FolderController', () => {
   let server: Server
   let prismaClient: PrismaClient
 

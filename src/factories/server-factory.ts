@@ -16,6 +16,7 @@ import { createFileController } from './controllers/file-controller-factory'
 import { createCreateFile } from './use-cases/create-file-factory'
 import { createFilePrismaRepository } from './repositories/file-prisma-repository-factory'
 import { createUploadHandler } from './upload-handler-factory'
+import { createIsNameAvailble } from './use-cases/is-name-availble-factory'
 
 export function createServer() {
   const prismaClient = createPrismaClient()
@@ -25,11 +26,12 @@ export function createServer() {
   const userRepository = createUserPrismaRepository(prismaClient)
   const fileRepository = createFilePrismaRepository(prismaClient)
 
+  const isNameAvailble = createIsNameAvailble(folderRepository)
   const getFolderUseCase = createGetFolder(folderRepository)
   const userHasFolderPermission = createUserHasFolderPermission(userRepository, folderRepository)
   const createUser = createCreateUser(userRepository)
   const signIn = createSignIn(userRepository)
-  const createFolderUseCase = createCreateFolder(folderRepository, userRepository, userHasFolderPermission)
+  const createFolderUseCase = createCreateFolder(folderRepository, userRepository, userHasFolderPermission, isNameAvailble)
   const createFileUseCase = createCreateFile(fileRepository)
 
   const folderController = createFolderController(createFolderUseCase, getFolderUseCase)

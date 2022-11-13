@@ -10,6 +10,7 @@ import { ForeignKeyConstraintError } from '../../data/errors/foreign-key-constra
 import { PrismaClient } from '@prisma/client'
 import { PermissionError } from '../../application/errors/permission-error'
 import { SameNameError } from '../../application/errors/same-name-error'
+import { createIsNameAvailble } from '../../factories/use-cases/is-name-availble-factory'
 
 describe.only('Create Folder Use Case', () => {
   let createFolder: CreateFolder
@@ -24,8 +25,9 @@ describe.only('Create Folder Use Case', () => {
     const folderRepo = createFolderPrismaRepository(prismaClient)
     const userRepo = createUserPrismaRepository(prismaClient)
     const userHasPermission = createUserHasFolderPermission(userRepo, folderRepo)
+    const isNameAvailble = createIsNameAvailble(folderRepo)
 
-    createFolder = createCreateFolder(folderRepo, userRepo, userHasPermission)
+    createFolder = createCreateFolder(folderRepo, userRepo, userHasPermission, isNameAvailble)
   })
 
   describe('creates a folder', () => {
