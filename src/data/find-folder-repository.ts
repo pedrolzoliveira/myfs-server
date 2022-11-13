@@ -3,7 +3,8 @@ import { Folder } from '../domain/model/folder'
 export interface FindFolderData {
   id?: string
   name?: string
-  parentId?: string
+  parentId?: string | null
+  userId?: string
 }
 
 export interface FindFolderRepository {

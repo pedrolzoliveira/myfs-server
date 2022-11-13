@@ -3,6 +3,7 @@ import { Folder } from '../model/folder'
 export interface GetFolderData {
   id?: string
   parentId?: string
+  userId: string
 }
 
 export interface GetFolder {

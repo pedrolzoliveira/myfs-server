@@ -44,14 +44,20 @@ export class FolderController {
 
   async find(req: Request, res: Response) {
     if (req.body.id) {
-      const folder = await this.getFolder.exec(req.body)
+      const folder = await this.getFolder.exec({
+        userId: req.session.user?.id as string,
+        id: req.body.id
+      })
       return res.status(HttpStatusCode.OK).send(
         transformResponse({
           payload: { folder }
         })
       )
     }
-    const folders = await this.getFolder.exec(req.body)
+    const folders = await this.getFolder.exec({
+      userId: req.session.user?.id as string,
+      parentId: req.body.parentId
+    })
     return res.status(HttpStatusCode.OK).send(
       transformResponse({
         payload: { folders }

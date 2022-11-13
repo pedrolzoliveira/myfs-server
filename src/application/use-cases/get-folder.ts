@@ -9,8 +9,14 @@ export class GetFolder implements IGetFolder {
 
   async exec(data: GetFolderData) {
     if (data.id) {
-      return await this.folderRepository.find({ id: data.id })
+      return await this.folderRepository.find({
+        id: data.id,
+        userId: data.userId
+      })
     }
-    return await this.folderRepository.findAll({})
+    return await this.folderRepository.findAll({
+      userId: data.userId,
+      parentId: null
+    })
   }
 }
