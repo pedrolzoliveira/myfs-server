@@ -12,7 +12,7 @@ import { PermissionError } from '../../application/errors/permission-error'
 import { SameNameError } from '../../application/errors/same-name-error'
 import { createIsNameAvailble } from '../../factories/use-cases/is-name-availble-factory'
 
-describe.only('Create Folder Use Case', () => {
+describe('Create Folder Use Case', () => {
   let createFolder: CreateFolder
   let user: User
   let prismaClient: PrismaClient

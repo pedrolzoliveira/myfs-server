@@ -7,11 +7,14 @@ import { PermissionError } from '../../../../application/errors/permission-error
 import { HttpError } from '../../http-error'
 import { ForeignKeyConstraintError } from '../../../../data/errors/foreign-key-constraint-error'
 import { SameNameError } from '../../../../application/errors/same-name-error'
+import { RenameFolder } from '../../../../domain/use-cases/rename-folder'
+import { EmptyResultError } from '../../../../application/errors/empty-result-error'
 
 export class FolderController {
   constructor (
     private readonly createFolder: CreateFolder,
-    private readonly getFolder: GetFolder
+    private readonly getFolder: GetFolder,
+    private readonly renameFolder: RenameFolder
   ) {}
 
   async create(req: Request, res: Response) {
@@ -63,5 +66,32 @@ export class FolderController {
         payload: { folders }
       })
     )
+  }
+
+  async update(req: Request, res: Response) {
+    try {
+      const folder = await this.renameFolder.exec({
+        userId: req.session.user?.id as string,
+        id: req.body.id,
+        name: req.body.name
+      })
+      return res.status(HttpStatusCode.OK).send(
+        transformResponse({
+          payload: { folder },
+          message: 'name updated succesfully'
+        })
+      )
+    } catch (e) {
+      if (e instanceof PermissionError) {
+        throw new HttpError(403, "You don't have permission over this folder.")
+      }
+      if (e instanceof EmptyResultError) {
+        throw new HttpError(404, 'Folder not found.')
+      }
+      if (e instanceof SameNameError) {
+        throw new HttpError(409, 'This name is already being used.')
+      }
+      throw e
+    }
   }
 }

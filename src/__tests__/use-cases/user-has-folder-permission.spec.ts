@@ -8,7 +8,7 @@ import { createPrismaClient } from '../../factories/prisma-client-factory'
 import { createUserHasFolderPermission } from '../../factories/use-cases/user-has-folder-permission-factory'
 import { createUserPrismaRepository } from '../../factories/repositories/user-prisma-repository'
 
-describe.only('User Has Folder Permission Use Case', () => {
+describe('User Has Folder Permission Use Case', () => {
   let userHasFolderPermission: UserHasFolderPermission
   let prismaClient: PrismaClient
   let user: User
