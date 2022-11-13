@@ -24,7 +24,7 @@ model Folder {
     userId String
     owner User @relation(fields: [userId], references: [id])
     parent Folder? @relation("parentChildren", fields: [parentId], references: [id])
-    children Folder[] @relation("parentChildren") 
+    folders Folder[] @relation("parentChildren") 
     files File[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

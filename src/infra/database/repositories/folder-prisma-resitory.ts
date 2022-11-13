@@ -18,12 +18,24 @@ export class FolderPrismaRepository implements FindFolderRepository, FindAllFold
     return this.prismaClient.folder.findFirst({
       where: {
         ...data
+      },
+      include: {
+        files: true,
+        folders: true
       }
     })
   }
 
   findAll(data: FindAllData) {
-    return this.prismaClient.folder.findMany({ where: { id: data.id } })
+    return this.prismaClient.folder.findMany({
+      where: {
+        ...data
+      },
+      include: {
+        files: true,
+        folders: true
+      }
+    })
   }
 
   async updateFolder(data: UpdateFolderData) {
