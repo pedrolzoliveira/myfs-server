@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from 'express'
 import { EmptyResultError } from '../../../../application/errors/empty-result-error'
+import { PermissionError } from '../../../../application/errors/permission-error'
+import { SameNameError } from '../../../../application/errors/same-name-error'
 import { User } from '../../../../domain/model/user'
 import { CreateFile } from '../../../../domain/use-cases/create-file'
+import { RenameFile } from '../../../../domain/use-cases/rename-file'
 import { UserHasFolderPermission } from '../../../../domain/use-cases/user-has-folder-permission'
 import { HttpError } from '../../http-error'
 import { HttpStatusCode } from '../../http-status-code'
@@ -16,7 +19,8 @@ interface CreateFileRequest extends Request {
 export class FileController {
   constructor(
     private readonly userHasFolderPermission: UserHasFolderPermission,
-    private readonly createFile: CreateFile
+    private readonly createFile: CreateFile,
+    private readonly renameFile: RenameFile
   ) {}
 
   async checkPermission(req: CreateFileRequest, res: Response, next: NextFunction) {
@@ -46,5 +50,32 @@ export class FileController {
         payload: { file },
         message: 'File created successfully'
       }))
+  }
+
+  async update(req: Request, res: Response) {
+    try {
+      const file = await this.renameFile.exec({
+        userId: req.session.user?.id as string,
+        name: req.body.name,
+        id: req.body.id
+      })
+      return res.status(HttpStatusCode.OK).send(
+        transformResponse({
+          payload: { file },
+          message: 'Name changed.'
+        })
+      )
+    } catch (e) {
+      if (e instanceof PermissionError) {
+        throw new HttpError(403, "You don't have permission over this file.")
+      }
+      if (e instanceof EmptyResultError) {
+        throw new HttpError(404, 'File not found.')
+      }
+      if (e instanceof SameNameError) {
+        throw new HttpError(409, "There's already a file with that name in this folder.")
+      }
+      throw e
+    }
   }
 }

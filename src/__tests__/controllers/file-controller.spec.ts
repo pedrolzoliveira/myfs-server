@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client'
 import { createPrismaClient } from '../../factories/prisma-client-factory'
 import { createReadStream } from 'fs'
 
-describe('FileController', () => {
+describe.only('FileController', () => {
   let server: Server
   let prismaClient: PrismaClient
   let folderId: string
@@ -137,6 +137,166 @@ describe('FileController', () => {
 
         it('returns 400', () => {
           expect(response.statusCode).toBe(400)
+        })
+      })
+    })
+  })
+
+  describe('PUT /files', () => {
+    describe('2XX', () => {
+      describe('changes the name of a file', () => {
+        beforeAll(async() => {
+          const file = await prismaClient.file.create({
+            data: {
+              name: 'oldname',
+              location: 'location',
+              folderId
+            }
+          })
+          response = await request(server.app).put('/files').set('Cookie', cookie).send({ id: file.id, name: 'new name' })
+        })
+
+        it('returns the right payload', () => {
+          expect(response.body.payload.file.name).toBe('new name')
+        })
+
+        it('returns the right message', () => {
+          expect(response.body.message).toBe('Name changed.')
+        })
+
+        it('returns ok true', () => {
+          expect(response.body.ok).toBe(true)
+        })
+
+        it('returns 200', () => {
+          expect(response.statusCode).toBe(200)
+        })
+      })
+    })
+    describe('4XX', () => {
+      describe('tries to send a request with an empty payload', () => {
+        beforeAll(async() => {
+          response = await request(server.app).put('/files').set('Cookie', cookie).send({})
+        })
+
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+
+        it('returns 400', () => {
+          expect(response.statusCode).toBe(400)
+        })
+      })
+
+      describe('tries to send a request without name', () => {
+        beforeAll(async () => {
+          response = await request(server.app).put('/files').set('Cookie', cookie).send({ id: 'id doesnt really metter' })
+        })
+
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+
+        it('returns 400', () => {
+          expect(response.statusCode).toBe(400)
+        })
+      })
+
+      describe('tries to send a request without id', () => {
+        beforeAll(async () => {
+          response = await request(server.app).put('/files').set('Cookie', cookie).send({ name: 'the name doesnt really metter' })
+        })
+
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+
+        it('returns 400', () => {
+          expect(response.statusCode).toBe(400)
+        })
+      })
+
+      describe('tries to send a request without being loggedIn', () => {
+        beforeAll(async () => {
+          response = await request(server.app).put('/files').send({ id: 'whatever', name: 'doesnot metter' })
+        })
+
+        it('returns the right message', () => {
+          expect(response.body.message).toBe('UNAUTHORIZED')
+        })
+
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+
+        it('returns 401', () => {
+          expect(response.statusCode).toBe(401)
+        })
+      })
+
+      describe('tries to change a file that you do not own', () => {
+        beforeAll(async () => {
+          const fileIDoNotOwn = await prismaClient.file.create({
+            data: {
+              name: 'some file',
+              location: 'some_location',
+              folder: {
+                create: {
+                  name: 'not my cool folder',
+                  owner: {
+                    create: {
+                      name: 'someone else',
+                      email: 'some_email@mail.com'
+                    }
+                  }
+                }
+              }
+            }
+          })
+
+          response = await request(server.app).put('/files').set('Cookie', cookie).send({ id: fileIDoNotOwn.id, name: 'should not change' })
+        })
+
+        it('returns the right message', () => {
+          expect(response.body.message).toBe("You don't have permission over this file.")
+        })
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+        it('returns 403', () => {
+          expect(response.statusCode).toBe(403)
+        })
+      })
+
+      describe('tries to change a file name with an already used name', () => {
+        beforeAll(async() => {
+          const [file] = await Promise.all([
+            prismaClient.file.create({
+              data: {
+                name: 'im going to try to change this name',
+                location: 'lmao a location',
+                folderId
+              }
+            }),
+            prismaClient.file.create({
+              data: {
+                name: 'name already used',
+                location: 'the_location',
+                folderId
+              }
+            })
+          ])
+          response = await request(server.app).put('/files').set('Cookie', cookie).send({ id: file.id, name: 'name already used' })
+        })
+
+        it('returns the right message', () => {
+          expect(response.body.message).toBe("There's already a file with that name in this folder.")
+        })
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+        it('returns 409', () => {
+          expect(response.statusCode).toBe(409)
         })
       })
     })

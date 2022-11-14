@@ -2,8 +2,9 @@ import { PrismaClient } from '@prisma/client'
 import { CountFileRepository, CountData } from '../../../data/count-file-repository'
 import { CreateFileData, CreateFileRepository } from '../../../data/create-file-repository'
 import { FindData, FindFileRepository } from '../../../data/find-file-repository'
+import { UpdateFileData, UpdateFileRepository } from '../../../data/update-file-repository'
 
-export class FilePrismaRepository implements CreateFileRepository, FindFileRepository, CountFileRepository {
+export class FilePrismaRepository implements CreateFileRepository, FindFileRepository, CountFileRepository, UpdateFileRepository {
   constructor (
     private readonly prismaClient: PrismaClient
   ) {}
@@ -30,5 +31,17 @@ export class FilePrismaRepository implements CreateFileRepository, FindFileRepos
 
   async count(data: CountData) {
     return this.prismaClient.file.count({ where: { ...data } })
+  }
+
+  update(data: UpdateFileData) {
+    return this.prismaClient.file.update({
+      where: {
+        id: data.id
+      },
+      data: {
+        name: data.name,
+        folderId: data.folderId
+      }
+    })
   }
 }

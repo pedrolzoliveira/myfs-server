@@ -6,7 +6,7 @@ import { RenameFolder } from '../../domain/use-cases/rename-folder'
 import { createPrismaClient } from '../../factories/prisma-client-factory'
 import { createFolderPrismaRepository } from '../../factories/repositories/folder-prisma-repository-factory'
 import { createUserPrismaRepository } from '../../factories/repositories/user-prisma-repository'
-import { createIsNameAvailble } from '../../factories/use-cases/is-folder-name-availble-factory'
+import { createIsFolderNameAvailble } from '../../factories/use-cases/is-folder-name-availble-factory'
 import { createRenameFolder } from '../../factories/use-cases/rename-folder-factory'
 import { createUserHasFolderPermission } from '../../factories/use-cases/user-has-folder-permission-factory'
 
@@ -19,7 +19,7 @@ describe('Rename Folder Use Case', () => {
     prismaClient = createPrismaClient()
     const folderRepo = createFolderPrismaRepository(prismaClient)
     const userRepo = createUserPrismaRepository(prismaClient)
-    const isNameAvailble = createIsNameAvailble(folderRepo)
+    const isNameAvailble = createIsFolderNameAvailble(folderRepo)
     const userHasFolderPermission = createUserHasFolderPermission(userRepo, folderRepo)
     renameFolder = createRenameFolder(folderRepo, isNameAvailble, userHasFolderPermission)
 
