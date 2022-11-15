@@ -4,6 +4,7 @@ import { PermissionError } from '../../../../application/errors/permission-error
 import { SameNameError } from '../../../../application/errors/same-name-error'
 import { User } from '../../../../domain/model/user'
 import { CreateFile } from '../../../../domain/use-cases/create-file'
+import { DeleteFile } from '../../../../domain/use-cases/delete-file'
 import { RenameFile } from '../../../../domain/use-cases/rename-file'
 import { UserHasFolderPermission } from '../../../../domain/use-cases/user-has-folder-permission'
 import { HttpError } from '../../http-error'
@@ -20,7 +21,8 @@ export class FileController {
   constructor(
     private readonly userHasFolderPermission: UserHasFolderPermission,
     private readonly createFile: CreateFile,
-    private readonly renameFile: RenameFile
+    private readonly renameFile: RenameFile,
+    private readonly deleteFile: DeleteFile
   ) {}
 
   async checkPermission(req: CreateFileRequest, res: Response, next: NextFunction) {
@@ -74,6 +76,40 @@ export class FileController {
       }
       if (e instanceof SameNameError) {
         throw new HttpError(409, "There's already a file with that name in this folder.")
+      }
+      throw e
+    }
+  }
+
+  async delete(req: Request, res: Response) {
+    try {
+      const deleted = await this.deleteFile.exec({
+        id: req.body.id,
+        userId: req.session.user?.id as string
+      })
+      if (!deleted) {
+        return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(
+          transformResponse({
+            errors: [
+              { message: 'Error when excluding file' }
+            ],
+            message: 'Error when excluding the file',
+            ok: false
+          })
+        )
+      }
+      return res.status(HttpStatusCode.OK).send(
+        transformResponse({
+          message: 'File excluded successfully',
+          ok: true
+        })
+      )
+    } catch (e) {
+      if (e instanceof EmptyResultError) {
+        throw new HttpError(404, 'File not found.')
+      }
+      if (e instanceof PermissionError) {
+        throw new HttpError(403, "You don't have permission over this file.")
       }
       throw e
     }

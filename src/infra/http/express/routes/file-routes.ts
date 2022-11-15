@@ -23,6 +23,13 @@ export class FileRoutes {
       this.fileController.update.bind(fileController)
     )
 
+    this.route.delete(
+      '/',
+      this.schemaValidator.handle({ id: { isString: true, in: 'body', errorMessage: 'id is required' } }),
+      this.authenticator.handle,
+      this.fileController.delete.bind(fileController)
+    )
+
     this.route.post(
       '/upload',
       this.schemaValidator.handle(UploadFile),

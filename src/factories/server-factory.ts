@@ -21,6 +21,7 @@ import { createRenameFolder } from './use-cases/rename-folder-factory'
 import { createIsFileNameAvailble } from './use-cases/is-file-name-availble-factory'
 import { createRenameFile } from './use-cases/rename-file-factory'
 import { createUserHasFilePermission } from './use-cases/user-has-file-permission-factory'
+import { createDeleteFile } from './use-cases/delete-file-factory'
 
 export function createServer() {
   const prismaClient = createPrismaClient()
@@ -41,9 +42,10 @@ export function createServer() {
   const createFileUseCase = createCreateFile(fileRepository)
   const renameFolder = createRenameFolder(folderRepository, isFolderNameAvailble, userHasFolderPermission)
   const renameFile = createRenameFile(fileRepository, userHasFilePermission, isFileNameAvailble)
+  const deleteFile = createDeleteFile(userHasFilePermission, fileRepository)
   const folderController = createFolderController(createFolderUseCase, getFolderUseCase, renameFolder)
   const userController = createUserController(createUser, signIn)
-  const fileController = createFileController(userHasFolderPermission, createFileUseCase, renameFile)
+  const fileController = createFileController(userHasFolderPermission, createFileUseCase, renameFile, deleteFile)
 
   const uploadHanlder = createUploadHandler()
 
