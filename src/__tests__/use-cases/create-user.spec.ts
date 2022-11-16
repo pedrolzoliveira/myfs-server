@@ -1,14 +1,12 @@
 import { User } from '../../domain/model/user'
 import { CreateUser } from '../../domain/use-cases/create-user'
-import { createCreateUser } from '../../factories/use-cases/create-user-factory'
-import { createPrismaClient } from '../../factories/prisma-client-factory'
-import { createUserPrismaRepository } from '../../factories/repositories/user-prisma-repository'
+import { CreateUserFactory } from '../../factories/application/use-cases/create-user-factory'
 
 describe('Create User Use Case', () => {
   let createUser: CreateUser
 
-  beforeAll(() => {
-    createUser = createCreateUser(createUserPrismaRepository(createPrismaClient()))
+  beforeAll(async () => {
+    createUser = await CreateUserFactory.create()
   })
 
   describe('creates a user', () => {

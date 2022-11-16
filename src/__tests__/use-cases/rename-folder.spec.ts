@@ -3,12 +3,8 @@ import { PermissionError } from '../../application/errors/permission-error'
 import { SameNameError } from '../../application/errors/same-name-error'
 import { Folder } from '../../domain/model/folder'
 import { RenameFolder } from '../../domain/use-cases/rename-folder'
-import { createPrismaClient } from '../../factories/prisma-client-factory'
-import { createFolderPrismaRepository } from '../../factories/repositories/folder-prisma-repository-factory'
-import { createUserPrismaRepository } from '../../factories/repositories/user-prisma-repository'
-import { createIsFolderNameAvailble } from '../../factories/use-cases/is-folder-name-availble-factory'
-import { createRenameFolder } from '../../factories/use-cases/rename-folder-factory'
-import { createUserHasFolderPermission } from '../../factories/use-cases/user-has-folder-permission-factory'
+import { PrismaClientFactory } from '../../factories/infra/prisma-client-factory'
+import { RenameFolderFactory } from '../../factories/application/use-cases/rename-folder-factory'
 
 describe('Rename Folder Use Case', () => {
   let renameFolder: RenameFolder
@@ -16,12 +12,8 @@ describe('Rename Folder Use Case', () => {
   let userId: string
 
   beforeAll(async () => {
-    prismaClient = createPrismaClient()
-    const folderRepo = createFolderPrismaRepository(prismaClient)
-    const userRepo = createUserPrismaRepository(prismaClient)
-    const isNameAvailble = createIsFolderNameAvailble(folderRepo)
-    const userHasFolderPermission = createUserHasFolderPermission(userRepo, folderRepo)
-    renameFolder = createRenameFolder(folderRepo, isNameAvailble, userHasFolderPermission)
+    prismaClient = await PrismaClientFactory.create()
+    renameFolder = await RenameFolderFactory.create()
 
     const user = await prismaClient.user.create({
       data: {

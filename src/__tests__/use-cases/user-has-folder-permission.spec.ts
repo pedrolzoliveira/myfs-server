@@ -3,10 +3,8 @@ import { EmptyResultError } from '../../application/errors/empty-result-error'
 import { Folder } from '../../domain/model/folder'
 import { User } from '../../domain/model/user'
 import { UserHasFolderPermission } from '../../domain/use-cases/user-has-folder-permission'
-import { createFolderPrismaRepository } from '../../factories/repositories/folder-prisma-repository-factory'
-import { createPrismaClient } from '../../factories/prisma-client-factory'
-import { createUserHasFolderPermission } from '../../factories/use-cases/user-has-folder-permission-factory'
-import { createUserPrismaRepository } from '../../factories/repositories/user-prisma-repository'
+import { PrismaClientFactory } from '../../factories/infra/prisma-client-factory'
+import { UserHasFolderPermissionFactory } from '../../factories/application/use-cases/user-has-folder-permission-factory'
 
 describe('User Has Folder Permission Use Case', () => {
   let userHasFolderPermission: UserHasFolderPermission
@@ -14,12 +12,9 @@ describe('User Has Folder Permission Use Case', () => {
   let user: User
 
   beforeAll(async () => {
-    prismaClient = createPrismaClient()
+    prismaClient = await PrismaClientFactory.create()
 
-    userHasFolderPermission = createUserHasFolderPermission(
-      createUserPrismaRepository(prismaClient),
-      createFolderPrismaRepository(prismaClient)
-    )
+    userHasFolderPermission = await UserHasFolderPermissionFactory.create()
 
     user = await prismaClient.user.create({
       data: {
