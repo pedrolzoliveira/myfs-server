@@ -11,8 +11,8 @@ describe('FolderController', () => {
   let response: Response
   let cookie: string[]
 
-  beforeAll(() => {
-    server = createServer()
+  beforeAll(async () => {
+    server = await createServer()
     prismaClient = createPrismaClient()
   })
 
