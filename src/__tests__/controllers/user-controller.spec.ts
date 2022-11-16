@@ -7,8 +7,8 @@ describe('UserController', () => {
   let server: Server
   let response: Response
 
-  beforeAll(() => {
-    server = createServer()
+  beforeAll(async () => {
+    server = await createServer()
   })
 
   describe('POST /users', () => {

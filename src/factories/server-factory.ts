@@ -21,15 +21,18 @@ import { createRenameFolder } from './use-cases/rename-folder-factory'
 import { createIsFileNameAvailble } from './use-cases/is-file-name-availble-factory'
 import { createRenameFile } from './use-cases/rename-file-factory'
 import { createUserHasFilePermission } from './use-cases/user-has-file-permission-factory'
-import { createDeleteFile } from './use-cases/delete-file-factory'
+import { createPrepareDeleteFile } from './use-cases/prepare-delete-file-factory'
+import { createDeleteFilePublisher } from './delete-file-publisher-factory'
 
-export function createServer() {
+export async function createServer() {
   const prismaClient = createPrismaClient()
   const authenticator = createAuthenticator()
 
   const folderRepository = createFolderPrismaRepository(prismaClient)
   const userRepository = createUserPrismaRepository(prismaClient)
   const fileRepository = createFilePrismaRepository(prismaClient)
+
+  const deleteFilePublisher = await createDeleteFilePublisher()
 
   const isFolderNameAvailble = createIsFolderNameAvailble(folderRepository)
   const isFileNameAvailble = createIsFileNameAvailble(fileRepository)
@@ -42,10 +45,10 @@ export function createServer() {
   const createFileUseCase = createCreateFile(fileRepository)
   const renameFolder = createRenameFolder(folderRepository, isFolderNameAvailble, userHasFolderPermission)
   const renameFile = createRenameFile(fileRepository, userHasFilePermission, isFileNameAvailble)
-  const deleteFile = createDeleteFile(userHasFilePermission, fileRepository)
+  const prepareDeleteFile = createPrepareDeleteFile(userHasFilePermission, fileRepository, deleteFilePublisher)
   const folderController = createFolderController(createFolderUseCase, getFolderUseCase, renameFolder)
   const userController = createUserController(createUser, signIn)
-  const fileController = createFileController(userHasFolderPermission, createFileUseCase, renameFile, deleteFile)
+  const fileController = createFileController(userHasFolderPermission, createFileUseCase, renameFile, prepareDeleteFile)
 
   const uploadHanlder = createUploadHandler()
 
