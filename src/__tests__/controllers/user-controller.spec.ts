@@ -1,6 +1,6 @@
-import { createServer } from '../../factories/server-factory'
-import { Server } from '../../infra/http/express/server'
 import request, { Response } from 'supertest'
+import { Server } from '../../infra/http/express/server'
+import { ServerFactory } from '../../factories/infra/server-factory'
 import { User } from '../../domain/model/user'
 
 describe('UserController', () => {
@@ -8,7 +8,7 @@ describe('UserController', () => {
   let response: Response
 
   beforeAll(async () => {
-    server = await createServer()
+    server = await ServerFactory.create()
   })
 
   describe('POST /users', () => {

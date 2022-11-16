@@ -1,8 +1,8 @@
-import { createServer } from '../../factories/server-factory'
-import { Server } from '../../infra/http/express/server'
 import request, { Response } from 'supertest'
+import { Server } from '../../infra/http/express/server'
+import { ServerFactory } from '../../factories/infra/server-factory'
 import { PrismaClient } from '@prisma/client'
-import { createPrismaClient } from '../../factories/prisma-client-factory'
+import { PrismaClientFactory } from '../../factories/infra/prisma-client-factory'
 import { createReadStream } from 'fs'
 
 describe('FileController', () => {
@@ -13,8 +13,8 @@ describe('FileController', () => {
   let cookie: string[]
 
   beforeAll(async () => {
-    server = await createServer()
-    prismaClient = createPrismaClient()
+    server = await ServerFactory.create()
+    prismaClient = await PrismaClientFactory.create()
 
     const user = await prismaClient.user.create({ data: { name: 'owner', email: 'owner_folder@mail.com' } })
     const folder = await prismaClient.folder.create({ data: { name: 'testing', userId: user.id } })
