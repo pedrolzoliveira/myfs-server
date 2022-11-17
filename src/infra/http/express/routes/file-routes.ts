@@ -3,6 +3,7 @@ import { FileController } from '../controllers/file-controller'
 import { Authenticator } from '../middlawares/authenticator'
 import { SchemaValidator } from '../middlawares/schema-validator'
 import { UploadHandler } from '../middlawares/upload-handler'
+import { MoveFileSchema } from '../request-schemas/move-file-schema'
 import { UpdateFileSchema } from '../request-schemas/update-file-schema'
 import { UploadFile } from '../request-schemas/upload-file-schema'
 
@@ -38,6 +39,13 @@ export class FileRoutes {
       this.uploadHandler.handle(),
       this.uploadHandler.validateRequest,
       this.fileController.create.bind(fileController)
+    )
+
+    this.route.put(
+      '/move',
+      this.schemaValidator.handle(MoveFileSchema),
+      this.authenticator.handle,
+      this.fileController.move.bind(fileController)
     )
   }
 }
