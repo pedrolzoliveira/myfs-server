@@ -4,7 +4,7 @@ import { PermissionError } from '../../../../application/errors/permission-error
 import { SameNameError } from '../../../../application/errors/same-name-error'
 import { User } from '../../../../domain/model/user'
 import { CreateFile } from '../../../../domain/use-cases/create-file'
-import { DeleteFile } from '../../../../domain/use-cases/delete-file'
+import { PrepareDeleteFile } from '../../../../domain/use-cases/prepare-delete-file'
 import { RenameFile } from '../../../../domain/use-cases/rename-file'
 import { UserHasFolderPermission } from '../../../../domain/use-cases/user-has-folder-permission'
 import { HttpError } from '../../http-error'
@@ -22,7 +22,7 @@ export class FileController {
     private readonly userHasFolderPermission: UserHasFolderPermission,
     private readonly createFile: CreateFile,
     private readonly renameFile: RenameFile,
-    private readonly deleteFile: DeleteFile
+    private readonly prepareDeleteFile: PrepareDeleteFile
   ) {}
 
   async checkPermission(req: CreateFileRequest, res: Response, next: NextFunction) {
@@ -83,7 +83,7 @@ export class FileController {
 
   async delete(req: Request, res: Response) {
     try {
-      const deleted = await this.deleteFile.exec({
+      const deleted = await this.prepareDeleteFile.exec({
         id: req.body.id,
         userId: req.session.user?.id as string
       })
