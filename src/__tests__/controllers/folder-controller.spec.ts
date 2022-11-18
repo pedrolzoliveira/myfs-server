@@ -1,9 +1,9 @@
-import { createServer } from '../../factories/server-factory'
-import { Server } from '../../infra/http/express/server'
 import request, { Response } from 'supertest'
+import { Server } from '../../infra/http/express/server'
+import { ServerFactory } from '../../factories/infra/server-factory'
 import { Folder } from '../../domain/model/folder'
 import { PrismaClient } from '@prisma/client'
-import { createPrismaClient } from '../../factories/prisma-client-factory'
+import { PrismaClientFactory } from '../../factories/infra/prisma-client-factory'
 
 describe('FolderController', () => {
   let server: Server
@@ -11,9 +11,9 @@ describe('FolderController', () => {
   let response: Response
   let cookie: string[]
 
-  beforeAll(() => {
-    server = createServer()
-    prismaClient = createPrismaClient()
+  beforeAll(async () => {
+    server = await ServerFactory.create()
+    prismaClient = await PrismaClientFactory.create()
   })
 
   describe('POST /folders', () => {

@@ -29,5 +29,12 @@ export class FolderRoutes {
       this.schemaValidator.handle(FolderUpdateSchema),
       this.folderController.update.bind(folderController)
     )
+
+    this.route.delete(
+      '/',
+      this.authenticator.handle,
+      this.schemaValidator.handle({ id: { isString: true, in: ['body'], errorMessage: 'id is required' } }),
+      this.folderController.delete.bind(folderController)
+    )
   }
 }

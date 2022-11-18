@@ -9,12 +9,14 @@ import { ForeignKeyConstraintError } from '../../../../data/errors/foreign-key-c
 import { SameNameError } from '../../../../application/errors/same-name-error'
 import { RenameFolder } from '../../../../domain/use-cases/rename-folder'
 import { EmptyResultError } from '../../../../application/errors/empty-result-error'
+import { DeleteFolder } from '../../../../application/use-cases/delete-folder'
 
 export class FolderController {
   constructor (
     private readonly createFolder: CreateFolder,
     private readonly getFolder: GetFolder,
-    private readonly renameFolder: RenameFolder
+    private readonly renameFolder: RenameFolder,
+    private readonly deleteFolder: DeleteFolder
   ) {}
 
   async create(req: Request, res: Response) {
@@ -90,6 +92,29 @@ export class FolderController {
       }
       if (e instanceof SameNameError) {
         throw new HttpError(409, 'This name is already being used.')
+      }
+      throw e
+    }
+  }
+
+  async delete(req: Request, res: Response) {
+    try {
+      await this.deleteFolder.exec({
+        id: req.body.id,
+        userId: req.session.user?.id as string
+      })
+      return res.status(HttpStatusCode.OK).send(
+        transformResponse({
+          message: 'Folder deleted succesfully',
+          ok: true
+        })
+      )
+    } catch (e) {
+      if (e instanceof EmptyResultError) {
+        throw new HttpError(404, 'Folder not found')
+      }
+      if (e instanceof PermissionError) {
+        throw new HttpError(409, "You don't have permission over this folder")
       }
       throw e
     }

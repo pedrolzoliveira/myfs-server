@@ -1,16 +1,12 @@
 import { Folder } from '../../domain/model/folder'
 import { CreateFolder } from '../../domain/use-cases/create-folder'
-import { createCreateFolder } from '../../factories/use-cases/create-folder-factory'
-import { createFolderPrismaRepository } from '../../factories/repositories/folder-prisma-repository-factory'
-import { createPrismaClient } from '../../factories/prisma-client-factory'
+import { CreateFolderFactory } from '../../factories/application/use-cases/create-folder-factory'
+import { PrismaClientFactory } from '../../factories/infra/prisma-client-factory'
 import { User } from '../../domain/model/user'
-import { createUserPrismaRepository } from '../../factories/repositories/user-prisma-repository'
-import { createUserHasFolderPermission } from '../../factories/use-cases/user-has-folder-permission-factory'
 import { ForeignKeyConstraintError } from '../../data/errors/foreign-key-constraint-error'
 import { PrismaClient } from '@prisma/client'
 import { PermissionError } from '../../application/errors/permission-error'
 import { SameNameError } from '../../application/errors/same-name-error'
-import { createIsFolderNameAvailble } from '../../factories/use-cases/is-folder-name-availble-factory'
 
 describe('Create Folder Use Case', () => {
   let createFolder: CreateFolder
@@ -18,16 +14,11 @@ describe('Create Folder Use Case', () => {
   let prismaClient: PrismaClient
 
   beforeAll(async () => {
-    prismaClient = createPrismaClient()
+    prismaClient = await PrismaClientFactory.create()
 
     user = await prismaClient.user.create({ data: { name: 'The folder owner', email: 'the folder stuff' } })
 
-    const folderRepo = createFolderPrismaRepository(prismaClient)
-    const userRepo = createUserPrismaRepository(prismaClient)
-    const userHasPermission = createUserHasFolderPermission(userRepo, folderRepo)
-    const isNameAvailble = createIsFolderNameAvailble(folderRepo)
-
-    createFolder = createCreateFolder(folderRepo, userRepo, userHasPermission, isNameAvailble)
+    createFolder = await CreateFolderFactory.create()
   })
 
   describe('creates a folder', () => {

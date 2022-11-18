@@ -1,8 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { IsFileNameAvailble } from '../../domain/use-cases/is-file-name-availble'
-import { createPrismaClient } from '../../factories/prisma-client-factory'
-import { createFilePrismaRepository } from '../../factories/repositories/file-prisma-repository-factory'
-import { createIsFileNameAvailble } from '../../factories/use-cases/is-file-name-availble-factory'
+import { PrismaClientFactory } from '../../factories/infra/prisma-client-factory'
+import { IsFileNameAvailbleFactory } from '../../factories/application/use-cases/is-file-name-availble-factory'
 
 describe('Is File Name Availble Use Case', () => {
   let prismaClient: PrismaClient
@@ -11,9 +10,8 @@ describe('Is File Name Availble Use Case', () => {
   let isNameAvailble: boolean
 
   beforeAll(async () => {
-    prismaClient = createPrismaClient()
-    const fileRepository = createFilePrismaRepository(prismaClient)
-    isFileNameAvailble = createIsFileNameAvailble(fileRepository)
+    prismaClient = await PrismaClientFactory.create()
+    isFileNameAvailble = await IsFileNameAvailbleFactory.create()
     const { id } = await prismaClient.folder.create({
       select: {
         id: true
