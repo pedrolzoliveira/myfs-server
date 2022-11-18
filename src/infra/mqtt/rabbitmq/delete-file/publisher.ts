@@ -1,6 +1,6 @@
 import { Channel } from 'amqplib'
 
-import { DeleteFileMessage } from '../interfaces/delete-file-queue'
+import { DeleteFileMessage } from '../../interfaces/delete-file-queue'
 
 export class DeleteFilePublisher {
   constructor(

@@ -4,7 +4,7 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
+    provider = "postgresql"
     url = env("DATABASE_URL")
 }
 
@@ -13,7 +13,7 @@ model File {
     name String
     location String
     folderId String
-    folder Folder @relation(fields: [folderId], references: [id])
+    folder Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
@@ -24,7 +24,7 @@ model Folder {
     parentId String?
     userId String
     owner User @relation(fields: [userId], references: [id])
-    parent Folder? @relation("parentChildren", fields: [parentId], references: [id])
+    parent Folder? @relation("parentChildren", fields: [parentId], references: [id], onDelete: Cascade)
     folders Folder[] @relation("parentChildren") 
     files File[]
     createdAt DateTime @default(now())

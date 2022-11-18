@@ -2,7 +2,7 @@ import { PrepareDeleteFile } from '../../../application/use-cases/prepare-delete
 import { DeleteFileRepository } from '../../../data/delete-file-repository'
 import { FindFileRepository } from '../../../data/find-file-repository'
 import { UserHasFilePermission } from '../../../domain/use-cases/user-has-file-permission'
-import { DeleteFilePublisher } from '../../../infra/mqtt/rabbitmq/delete-file-publisher'
+import { DeleteFilePublisher } from '../../../infra/mqtt/rabbitmq/delete-file/publisher'
 import { DeleteFilePublisherFactory } from '../../infra/delete-file-publisher-factory'
 import { Factory } from '../../factory'
 import { FilePrismaRepositoryFactory } from '../../infra/repositories/file-prisma-repository-factory'

@@ -1,5 +1,5 @@
-import { DeleteFilePublisher } from '../../infra/mqtt/rabbitmq/delete-file-publisher'
 import amqplib from 'amqplib'
+import { DeleteFilePublisher } from '../../infra/mqtt/rabbitmq/delete-file/publisher'
 import { Factory } from '../factory'
 
 export const DeleteFilePublisherFactory: Factory<DeleteFilePublisher> = {
