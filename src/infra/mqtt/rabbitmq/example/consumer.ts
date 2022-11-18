@@ -1,17 +1,17 @@
 import { Channel } from 'amqplib'
-import { TestMessage } from '../interfaces/test-queue'
-import { transformMessage } from './transformers/transform-message'
+import { ExampleMessage } from '../../interfaces/example-queue'
+import { transformMessage } from '../transformers/transform-message'
 
-export class TestConsumer {
+export class ExampleConsumer {
   constructor(
     private readonly channel: Channel
   ) {}
 
   listen() {
-    this.channel.consume('test-queue', (message) => {
+    this.channel.consume('example-queue', (message) => {
       try {
         if (!message) return
-        const data = transformMessage<TestMessage>(message)
+        const data = transformMessage<ExampleMessage>(message)
         console.log({ data })
         this.channel.ack(message)
       } catch (e) {
