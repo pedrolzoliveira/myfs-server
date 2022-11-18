@@ -4,5 +4,5 @@ export interface DeleteFolderData {
 }
 
 export interface DeleteFolder {
-  exec: (data: DeleteFolderData) => Promise<boolean>
+  exec: (data: DeleteFolderData) => Promise<void>
 }

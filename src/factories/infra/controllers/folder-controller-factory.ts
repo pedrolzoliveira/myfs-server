@@ -3,13 +3,15 @@ import { Factory } from '../../factory'
 import { CreateFolderFactory } from '../../application/use-cases/create-folder-factory'
 import { GetFolderFactory } from '../../application/use-cases/get-folder-factory'
 import { RenameFolderFactory } from '../../application/use-cases/rename-folder-factory'
+import { DeleteFolderFactory } from '../../application/use-cases/delete-folder-factory'
 
 export const FolderControllerFactory: Factory<FolderController> = {
   async create() {
     return new FolderController(
       await CreateFolderFactory.create(),
       await GetFolderFactory.create(),
-      await RenameFolderFactory.create()
+      await RenameFolderFactory.create(),
+      await DeleteFolderFactory.create()
     )
   }
 }
