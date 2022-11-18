@@ -2,7 +2,7 @@ import { DeleteFileRepository } from '../../data/delete-file-repository'
 import { FindFileRepository } from '../../data/find-file-repository'
 import { PrepareDeleteFile as IPrepareDeleteFile, PrepareDeleteFileData } from '../../domain/use-cases/prepare-delete-file'
 import { UserHasFilePermission } from '../../domain/use-cases/user-has-file-permission'
-import { DeleteFilePublisher } from '../../infra/mqtt/rabbitmq/delete-file-publisher'
+import { DeleteFilePublisher } from '../../infra/mqtt/rabbitmq/delete-file/publisher'
 import { EmptyResultError } from '../errors/empty-result-error'
 import { PermissionError } from '../errors/permission-error'
 

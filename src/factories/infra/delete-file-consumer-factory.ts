@@ -1,5 +1,5 @@
 import amqplib from 'amqplib'
-import { DeleteFileConsumer } from '../../infra/mqtt/rabbitmq/delete-file-consumer'
+import { DeleteFileConsumer } from '../../infra/mqtt/rabbitmq/delete-file/consumer'
 import { DeleteFileFactory } from '../application/use-cases/delete-file-factory'
 import { Factory } from '../factory'
 

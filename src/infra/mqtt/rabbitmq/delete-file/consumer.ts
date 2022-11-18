@@ -1,7 +1,7 @@
 import { Channel } from 'amqplib'
-import { DeleteFile } from '../../../domain/use-cases/delete-file'
-import { DeleteFileMessage } from '../interfaces/delete-file-queue'
-import { transformMessage } from './transformers/transform-message'
+import { DeleteFile } from '../../../../domain/use-cases/delete-file'
+import { DeleteFileMessage } from '../../interfaces/delete-file-queue'
+import { transformMessage } from '../transformers/transform-message'
 
 export class DeleteFileConsumer {
   constructor(
