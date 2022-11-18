@@ -9,6 +9,7 @@ describe('FileController', () => {
   let server: Server
   let prismaClient: PrismaClient
   let folderId: string
+  let userId: string
   let response: Response
   let cookie: string[]
 
@@ -20,6 +21,7 @@ describe('FileController', () => {
     const folder = await prismaClient.folder.create({ data: { name: 'testing', userId: user.id } })
 
     folderId = folder.id
+    userId = user.id
 
     const r = await request(server.app).post('/users/sign-in').send({ email: 'owner_folder@mail.com' })
     cookie = r.headers['set-cookie']
@@ -297,6 +299,180 @@ describe('FileController', () => {
         })
         it('returns 409', () => {
           expect(response.statusCode).toBe(409)
+        })
+      })
+    })
+  })
+
+  describe('PUT /files/move', () => {
+    describe('2XX', () => {
+      describe('moves the file', () => {
+        beforeAll(async() => {
+          const file = await prismaClient.file.create({
+            data: {
+              name: 'lmao my name',
+              location: 'lol',
+              folder: {
+                create: {
+                  name: 'doesnotmetter',
+                  owner: {
+                    connect: {
+                      id: userId
+                    }
+                  }
+                }
+              }
+            }
+          })
+          response = await request(server.app)
+            .put('/files/move')
+            .set('Cookie', cookie)
+            .send({ id: file.id, folderId })
+        })
+
+        it('returns the right message', () => {
+          expect(response.body.message).toBe('File moved successfully')
+        })
+        it('returns ok true', () => {
+          expect(response.body.ok).toBe(true)
+        })
+        it('returns 200', () => {
+          expect(response.statusCode).toBe(200)
+        })
+      })
+    })
+
+    describe('4XX', () => {
+      describe('tries to move a file that has already the file name in the folder used', () => {
+        beforeAll(async() => {
+          const file = await prismaClient.file.create({
+            data: {
+              name: 'file-controller.spec.ts',
+              location: 'aws-somewhere',
+              folder: {
+                create: {
+                  name: 'other folder',
+                  owner: {
+                    connect: {
+                      id: userId
+                    }
+                  }
+                }
+              }
+            }
+          })
+
+          response = await request(server.app)
+            .put('/files/move')
+            .set('Cookie', cookie)
+            .send({ id: file.id, folderId })
+        })
+
+        it('returns the right message', () => {
+          expect(response.body.message).toBe("There's already a file with the same name in target folder.")
+        })
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+
+        it('returns 409', () => {
+          expect(response.statusCode).toBe(409)
+        })
+      })
+
+      describe('tries to move a file without the right permissions', () => {
+        beforeAll(async() => {
+          const fileIDoNotOwn = await prismaClient.file.create({
+            data: {
+              name: 'doesnotmetter',
+              location: 'lmao',
+              folder: {
+                create: {
+                  name: 'lol',
+                  owner: {
+                    create: {
+                      name: 'alright',
+                      email: 'lol@lol.com'
+                    }
+                  }
+                }
+              }
+            }
+          })
+          response = await request(server.app)
+            .put('/files/move')
+            .set('Cookie', cookie)
+            .send({ id: fileIDoNotOwn.id, folderId: fileIDoNotOwn.folderId })
+        })
+
+        it('returns the right message', () => {
+          expect(response.body.message).toBe("You don't have permission over this file or folder.")
+        })
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+        it('returns 403', () => {
+          expect(response.statusCode).toBe(403)
+        })
+      })
+
+      describe('tries to send a request with an empty payload', () => {
+        beforeAll(async() => {
+          response = await request(server.app).put('/files/move').set('Cookie', cookie).send({})
+        })
+
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+
+        it('returns 400', () => {
+          expect(response.statusCode).toBe(400)
+        })
+      })
+
+      describe('tries to send a request without folderId', () => {
+        beforeAll(async () => {
+          response = await request(server.app).put('/files/move').set('Cookie', cookie).send({ id: 'id doesnt really metter' })
+        })
+
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+
+        it('returns 400', () => {
+          expect(response.statusCode).toBe(400)
+        })
+      })
+
+      describe('tries to send a request without id', () => {
+        beforeAll(async () => {
+          response = await request(server.app).put('/files/move').set('Cookie', cookie).send({ folderId: 'the name doesnt really metter' })
+        })
+
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+
+        it('returns 400', () => {
+          expect(response.statusCode).toBe(400)
+        })
+      })
+
+      describe('tries to send a request without being loggedIn', () => {
+        beforeAll(async () => {
+          response = await request(server.app).put('/files/move').send({ id: 'whatever', folderId: 'doesnot metter' })
+        })
+
+        it('returns the right message', () => {
+          expect(response.body.message).toBe('UNAUTHORIZED')
+        })
+
+        it('returns ok false', () => {
+          expect(response.body.ok).toBe(false)
+        })
+
+        it('returns 401', () => {
+          expect(response.statusCode).toBe(401)
         })
       })
     })
