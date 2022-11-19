@@ -6,7 +6,7 @@ async function main() {
   const server = await ServerFactory.create()
   const deleteFileConsumer = await DeleteFileConsumerFactory.create()
   const deleteFilesConsumer = await DeleteFilesConsumerFactory.create()
-  server.listen(3000)
+  server.listen(4000)
   deleteFileConsumer.listen()
   deleteFilesConsumer.listen()
 }

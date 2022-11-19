@@ -25,9 +25,9 @@ export class FolderController {
   async create(req: Request, res: Response) {
     try {
       const data = {
-        name: req.body.name,
+        name: req.data.name,
         userId: req.session.user?.id as string,
-        parentId: req.body.parentId
+        parentId: req.data.parentId
       }
       const folder = await this.createFolder.exec(data)
       return res.status(HttpStatusCode.CREATED).send(
@@ -51,10 +51,10 @@ export class FolderController {
   }
 
   async find(req: Request, res: Response) {
-    if (req.body.id) {
+    if (req.data.id) {
       const folder = await this.getFolder.exec({
         userId: req.session.user?.id as string,
-        id: req.body.id
+        id: req.data.id
       })
       return res.status(HttpStatusCode.OK).send(
         transformResponse({
@@ -64,7 +64,7 @@ export class FolderController {
     }
     const folders = await this.getFolder.exec({
       userId: req.session.user?.id as string,
-      parentId: req.body.parentId
+      parentId: req.data.parentId
     })
     return res.status(HttpStatusCode.OK).send(
       transformResponse({
@@ -77,8 +77,8 @@ export class FolderController {
     try {
       const folder = await this.renameFolder.exec({
         userId: req.session.user?.id as string,
-        id: req.body.id,
-        name: req.body.name
+        id: req.data.id,
+        name: req.data.name
       })
       return res.status(HttpStatusCode.OK).send(
         transformResponse({
@@ -101,13 +101,11 @@ export class FolderController {
   }
 
   async move(req: Request, res: Response) {
-    console.log({ moveFolder: this.moveFolder })
-
     try {
       const folder = await this.moveFolder.exec({
         userId: req.session.user?.id as string,
-        id: req.body.id,
-        parentId: req.body.parentId
+        id: req.data.id,
+        parentId: req.data.parentId
       })
       return res.status(HttpStatusCode.OK).send(
         transformResponse({
@@ -132,7 +130,7 @@ export class FolderController {
   async delete(req: Request, res: Response) {
     try {
       await this.deleteFolder.exec({
-        id: req.body.id,
+        id: req.data.id,
         userId: req.session.user?.id as string
       })
       return res.status(HttpStatusCode.OK).send(

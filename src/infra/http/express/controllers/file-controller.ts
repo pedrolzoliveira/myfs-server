@@ -12,12 +12,6 @@ import { HttpError } from '../../http-error'
 import { HttpStatusCode } from '../../http-status-code'
 import { transformResponse } from '../../transformers/response-transformer'
 
-interface CreateFileRequest extends Request {
-  query: {
-    folderId: string
-  }
-}
-
 export class FileController {
   constructor(
     private readonly userHasFolderPermission: UserHasFolderPermission,
@@ -27,11 +21,11 @@ export class FileController {
     private readonly moveFile: MoveFile
   ) {}
 
-  async checkPermission(req: CreateFileRequest, res: Response, next: NextFunction) {
+  async checkPermission(req: Request, res: Response, next: NextFunction) {
     try {
       const hasPermission = await this.userHasFolderPermission.exec({
         userId: (req.session.user as User).id as string,
-        folderId: req.query.folderId
+        folderId: req.data.folderId
       })
       if (!hasPermission) throw new HttpError(403, "You don't have rigths over this folder.")
       return next()
@@ -43,10 +37,10 @@ export class FileController {
     }
   }
 
-  async create(req: CreateFileRequest, res: Response) {
+  async create(req: Request, res: Response) {
     const file = await this.createFile.exec({
       name: req.file?.originalname as string,
-      folderId: req.query.folderId,
+      folderId: req.data.folderId,
       location: req.file?.path as string
     })
     return res.status(HttpStatusCode.CREATED).send(
@@ -60,8 +54,8 @@ export class FileController {
     try {
       const file = await this.renameFile.exec({
         userId: req.session.user?.id as string,
-        name: req.body.name,
-        id: req.body.id
+        name: req.data.name,
+        id: req.data.id
       })
       return res.status(HttpStatusCode.OK).send(
         transformResponse({
@@ -86,7 +80,7 @@ export class FileController {
   async delete(req: Request, res: Response) {
     try {
       const deleted = await this.prepareDeleteFile.exec({
-        id: req.body.id,
+        id: req.data.id,
         userId: req.session.user?.id as string
       })
       if (!deleted) {
@@ -120,8 +114,8 @@ export class FileController {
   async move(req: Request, res: Response) {
     try {
       const file = await this.moveFile.exec({
-        id: req.body.id,
-        folderId: req.body.folderId,
+        id: req.data.id,
+        folderId: req.data.folderId,
         userId: req.session.user?.id as string
       })
       return res.status(HttpStatusCode.OK).send(
