@@ -4,6 +4,7 @@ import { Authenticator } from '../middlawares/authenticator'
 import { SchemaValidator } from '../middlawares/schema-validator'
 import { FolderCreateSchema } from '../request-schemas/folder-create-schema'
 import { FolderUpdateSchema } from '../request-schemas/folder-update-schema'
+import { MoveFolderSchema } from '../request-schemas/move-folder-schema'
 
 export class FolderRoutes {
   public route: Router
@@ -28,6 +29,13 @@ export class FolderRoutes {
       this.authenticator.handle,
       this.schemaValidator.handle(FolderUpdateSchema),
       this.folderController.update.bind(folderController)
+    )
+
+    this.route.put(
+      '/move',
+      this.authenticator.handle,
+      this.schemaValidator.handle(MoveFolderSchema),
+      this.folderController.move.bind(folderController)
     )
 
     this.route.delete(

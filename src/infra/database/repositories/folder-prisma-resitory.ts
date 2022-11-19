@@ -46,7 +46,7 @@ export class FolderPrismaRepository implements FindFolderRepository, FindAllFold
         id: data.id
       },
       data: {
-        name: data.name
+        ...data
       }
     })
     return folder
