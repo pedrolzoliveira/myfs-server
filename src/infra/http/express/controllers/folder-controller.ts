@@ -10,13 +10,16 @@ import { SameNameError } from '../../../../application/errors/same-name-error'
 import { RenameFolder } from '../../../../domain/use-cases/rename-folder'
 import { EmptyResultError } from '../../../../application/errors/empty-result-error'
 import { DeleteFolder } from '../../../../application/use-cases/delete-folder'
+import { MoveFolder } from '../../../../domain/use-cases/move-folder'
+import { NotFoundError } from '@prisma/client/runtime'
 
 export class FolderController {
   constructor (
     private readonly createFolder: CreateFolder,
     private readonly getFolder: GetFolder,
     private readonly renameFolder: RenameFolder,
-    private readonly deleteFolder: DeleteFolder
+    private readonly deleteFolder: DeleteFolder,
+    private readonly moveFolder: MoveFolder
   ) {}
 
   async create(req: Request, res: Response) {
@@ -92,6 +95,35 @@ export class FolderController {
       }
       if (e instanceof SameNameError) {
         throw new HttpError(409, 'This name is already being used.')
+      }
+      throw e
+    }
+  }
+
+  async move(req: Request, res: Response) {
+    console.log({ moveFolder: this.moveFolder })
+
+    try {
+      const folder = await this.moveFolder.exec({
+        userId: req.session.user?.id as string,
+        id: req.body.id,
+        parentId: req.body.parentId
+      })
+      return res.status(HttpStatusCode.OK).send(
+        transformResponse({
+          payload: { folder },
+          message: 'Folder moved successfully'
+        })
+      )
+    } catch (e) {
+      if (e instanceof PermissionError) {
+        throw new HttpError(403, "You don't have permission over one of the folders")
+      }
+      if (e instanceof NotFoundError) {
+        throw new HttpError(404, 'Folder not found')
+      }
+      if (e instanceof SameNameError) {
+        throw new HttpError(409, 'The name is already being used in the parent folder')
       }
       throw e
     }
