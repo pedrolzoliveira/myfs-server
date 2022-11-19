@@ -1,16 +1,17 @@
 import 'express-async-errors'
-import express, { Application, Router, json } from 'express'
+import express, { Application, Router, json, RequestHandler } from 'express'
 import { ErrorHandler } from './middlawares/error-handler'
-import session from 'express-session'
+
 export class Server {
   app: Application
   constructor(
     routes: Router,
-    private readonly errorHandler: ErrorHandler
+    private readonly errorHandler: ErrorHandler,
+    private readonly session: RequestHandler
   ) {
     this.app = express()
     this.app.use(json())
-    this.app.use(session({ secret: 'lmao i love pizza', saveUninitialized: false, resave: false }))
+    this.app.use(session)
     this.app.use(routes)
     this.app.use(this.errorHandler.handle)
   }
