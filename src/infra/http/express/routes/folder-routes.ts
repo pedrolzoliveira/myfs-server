@@ -16,6 +16,7 @@ export class FolderRoutes {
     this.route = Router()
     this.route.get('/',
       this.authenticator.handle,
+      this.schemaValidator.handle({ id: { isString: true, optional: true } }),
       this.folderController.find.bind(folderController)
     )
 
