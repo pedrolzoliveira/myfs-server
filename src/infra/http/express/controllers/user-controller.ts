@@ -45,4 +45,16 @@ export class UserController {
       })
     )
   }
+
+  async info(req: Request, res: Response) {
+    const user = req.session.user
+    if (!user) {
+      throw new HttpError(401, "You're not logged in")
+    }
+    return res.status(200).send(
+      transformResponse({
+        payload: { user }
+      })
+    )
+  }
 }
